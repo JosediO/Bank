@@ -17,5 +17,4 @@ public class UserDto {
 	private Boolean active;
 	private String name;
 	private Integer balance;
-
 }

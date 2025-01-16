@@ -2,11 +2,12 @@ package demo.resources.dao;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.Id;
 
+import demo.domain.entity.UserEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,4 +32,13 @@ public class UserDao {
 	private LocalDateTime created_at;
 	private LocalDateTime updated_at;
 	
+	public UserEntity toEntity() {
+		UserEntity entity = new UserEntity();
+		entity.setId(id);
+		entity.setAcessKey(acessKey);
+		entity.setActive(active);
+		entity.setName(name);
+		entity.setBalance(balance);
+		return entity;
+	}
 }
