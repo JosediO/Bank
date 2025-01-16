@@ -2,6 +2,11 @@ package demo.domain.exception;
 
 import demo.domain.enums.ErrorType;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class InvalidNameException extends Exception {
 
     private String errorMessage;
@@ -13,19 +18,4 @@ public class InvalidNameException extends Exception {
         this.type = type;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    public ErrorType getType() {
-        return type;
-    }
-
-    public void setType(ErrorType type) {
-        this.type = type;
-    }
 }

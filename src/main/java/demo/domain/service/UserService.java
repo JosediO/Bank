@@ -17,9 +17,6 @@ public class UserService {
 	@Autowired
 	private UserGateway userGateway;
 	
-	@Autowired
-	private UserRepository userRepository;
-	
 	public UserEntity getUserById(Integer id) throws NotFoundException {
 		UserEntity user = userGateway.findById(id);
 		if(user == null) {
@@ -30,13 +27,7 @@ public class UserService {
 
 	public UserEntity changeActivityUser(Integer id, Boolean active) throws NotFoundException {
 		UserEntity user = getUserById(id);
-			/*if(user.getActive() == true) {
-				user.setActive(false);
-			}else if(user.getActive()== false) {
-				user.setActive(true);*/
-			//}
 		user.setActive(!user.getActive());
-		
 		return userGateway.changeActivityUser(id,active);
 	}
 

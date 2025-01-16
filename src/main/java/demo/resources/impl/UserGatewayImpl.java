@@ -56,7 +56,7 @@ public class UserGatewayImpl implements UserGateway{
 	private UserDao toDao(UserDto userDto) {
 		UserDao userDao = new UserDao();
 		userDao.setId(userDto.getId());
-		userDao.setAcessKey(userDto.getAcessKey());
+		userDao.setAccessKey(userDto.getAcessKey());
 		userDao.setActive(userDto.getActive());
 		userDao.setName(userDto.getName());
 		userDao.setBalance(userDto.getBalance());
@@ -68,7 +68,7 @@ public class UserGatewayImpl implements UserGateway{
 	private UserEntity toEntity(UserDao userDao) {
 		UserEntity entityUser = new UserEntity();
 		entityUser.setId(userDao.getId());
-		entityUser.setAcessKey(userDao.getAcessKey());
+		entityUser.setAcessKey(userDao.getAccessKey());
 		entityUser.setActive(userDao.getActive());
 		entityUser.setName(userDao.getName());
 		entityUser.setBalance(userDao.getBalance());

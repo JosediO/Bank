@@ -46,8 +46,4 @@ public class BankController {
 		return ResponseEntity.ok(userService.updateUser(id, userDto));
 	}
 	
-	@DeleteMapping
-	public ResponseEntity<UserEntity> deletById(@RequestParam Integer id){
-		return ResponseEntity.ok(userService.changeActivityUser(id));
-	}
 }
