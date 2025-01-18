@@ -1,12 +1,16 @@
 package demo.resources.impl;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import demo.domain.entity.UserEntity;
+import demo.domain.enums.ErrorType;
 import demo.domain.exception.InvalidNameException;
+import demo.domain.exception.NotFoundException;
 import demo.domain.gateway.UserGateway;
 import demo.domain.service.ValidationService;
 import demo.domain.web.UserDto;
@@ -23,12 +27,16 @@ public class UserGatewayImpl implements UserGateway{
 	private ValidationService validationService;
 
 	@Override
-	public UserEntity findById(Integer id) {
-		return toEntity(userRepository.findById(id).orElse(null));
+	public UserEntity findById(Integer id) throws NotFoundException {
+		 Optional<UserDao> optionalUser = userRepository.findById(id);
+		 if (optionalUser.isEmpty()) {
+		        throw new NotFoundException("User not found for ID: " + id, ErrorType.NOT_FOUND);
+		    }
+		    return toEntity(optionalUser.get());
 	}
 	
 	@Override
-	public UserEntity changeActivityUser(Integer id, Boolean active) {
+	public UserEntity changeActivityUser(Integer id, Boolean active) throws NotFoundException {
 		UserEntity user = findById(id);
 		return userRepository.save(user);
 	}
@@ -41,7 +49,16 @@ public class UserGatewayImpl implements UserGateway{
 	}
 	
 	@Override
-	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException {
+	public Boolean deletUser(Integer id) {
+		if(userRepository.existsById(id)) {
+			userRepository.deleteById(id);
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException, NotFoundException {
 		UserEntity user = findById(id);
 		if(userDto.getName() != null) {
 			validationService.validationName(userDto.getName());
@@ -66,6 +83,9 @@ public class UserGatewayImpl implements UserGateway{
 	}
 	
 	private UserEntity toEntity(UserDao userDao) {
+		if(userDao == null) {
+			System.out.println("USER DAO NULL");
+		}
 		UserEntity entityUser = new UserEntity();
 		entityUser.setId(userDao.getId());
 		entityUser.setAcessKey(userDao.getAccessKey());
@@ -74,7 +94,5 @@ public class UserGatewayImpl implements UserGateway{
 		entityUser.setBalance(userDao.getBalance());
 		return entityUser;
 	}
-
-
 
 }

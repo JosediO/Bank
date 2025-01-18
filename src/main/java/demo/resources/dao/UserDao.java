@@ -40,6 +40,8 @@ public class UserDao {
 		entity.setActive(active);
 		entity.setName(name);
 		entity.setBalance(balance);
+		entity.setCreated_at(created_at);
+		entity.setUpdated_at(updated_at);
 		return entity;
 	}
 	

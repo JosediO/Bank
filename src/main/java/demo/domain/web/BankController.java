@@ -20,7 +20,7 @@ import demo.domain.exception.NotFoundException;
 import demo.domain.service.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class BankController {
 
 	@Autowired
@@ -42,8 +42,13 @@ public class BankController {
 	}
 	
 	@PutMapping
-	public ResponseEntity<UserEntity> updateUser(@RequestParam Integer id, UserDto userDto) throws InvalidNameException{
+	public ResponseEntity<UserEntity> updateUser(@RequestParam Integer id, UserDto userDto) throws InvalidNameException, NotFoundException{
 		return ResponseEntity.ok(userService.updateUser(id, userDto));
 	}
 	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deletUser(@PathVariable Integer id) throws NotFoundException{
+		return userService.deletUser(id);
+		
+	}
 }

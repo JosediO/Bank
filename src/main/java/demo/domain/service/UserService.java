@@ -1,6 +1,7 @@
 package demo.domain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import demo.domain.entity.UserEntity;
@@ -35,8 +36,16 @@ public class UserService {
 		return userGateway.createUser(userDto);
 	}
 
-	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException {
+	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException, NotFoundException {
 		return userGateway.updateUser(id, userDto);
+	}
+
+	public ResponseEntity<Void> deletUser(Integer id) throws NotFoundException {
+		if(userGateway.deletUser(id)) {;
+			return ResponseEntity.noContent().build();
+		}else {
+			throw new NotFoundException("The user not founded",ErrorType.NOT_FOUND);
+		}
 	}
 	
 }
