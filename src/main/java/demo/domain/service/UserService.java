@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import demo.domain.entity.UserEntity;
 import demo.domain.enums.ErrorType;
+import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.gateway.UserGateway;
@@ -27,12 +28,10 @@ public class UserService {
 	}
 
 	public UserEntity changeActivityUser(Integer id, Boolean active) throws NotFoundException {
-		UserEntity user = getUserById(id);
-		user.setActive(!user.getActive());
 		return userGateway.changeActivityUser(id,active);
 	}
 
-	public UserEntity createUser(UserDto userDto) {
+	public UserEntity createUser(UserDto userDto) throws InvalidBalanceException {
 		return userGateway.createUser(userDto);
 	}
 

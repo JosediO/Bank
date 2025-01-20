@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import demo.domain.entity.UserEntity;
+import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.service.UserService;
@@ -32,12 +33,12 @@ public class BankController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<UserEntity> createUser(@RequestBody UserDto userDto){
+	public ResponseEntity<UserEntity> createUser(@RequestBody UserDto userDto) throws InvalidBalanceException{
 		return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
 	}
 	
 	@PatchMapping("/{id}/active/{active}")
-	public ResponseEntity<UserEntity> changeActivity(@RequestParam Integer id, Boolean active) throws NotFoundException {
+	public ResponseEntity<UserEntity> changeActivity(@PathVariable Integer id, @PathVariable Boolean active) throws NotFoundException {
 		return ResponseEntity.ok(userService.changeActivityUser(id, active));
 	}
 	

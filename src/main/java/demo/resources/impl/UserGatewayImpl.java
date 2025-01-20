@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import demo.domain.entity.UserEntity;
 import demo.domain.enums.ErrorType;
+import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.gateway.UserGateway;
@@ -38,12 +39,17 @@ public class UserGatewayImpl implements UserGateway{
 	@Override
 	public UserEntity changeActivityUser(Integer id, Boolean active) throws NotFoundException {
 		UserEntity user = findById(id);
-		return userRepository.save(user);
+		user.setActive(!user.getActive());
+		userRepository.save(entityToDao(user));
+		return user;
 	}
 	
 	@Override
-	public UserEntity createUser(UserDto userDto) {
+	public UserEntity createUser(UserDto userDto) throws InvalidBalanceException {
 		UserDao userDao = toDao(userDto);
+		if(userDao.getBalance() < 0) {
+			throw new InvalidBalanceException("Insert a positive balance.",ErrorType.INVALID_VALUE_FORMAT);
+		}
 		UserDao saveDaoUser = userRepository.save(userDao);
 		return saveDaoUser.toEntity();
 	}
@@ -92,7 +98,23 @@ public class UserGatewayImpl implements UserGateway{
 		entityUser.setActive(userDao.getActive());
 		entityUser.setName(userDao.getName());
 		entityUser.setBalance(userDao.getBalance());
+		entityUser.setCreated_at(userDao.getCreated_at());
+		entityUser.setUpdated_at(LocalDateTime.now());
 		return entityUser;
 	}
 
+	private UserDao entityToDao (UserEntity userEntity) {
+		if(userEntity == null) {
+			System.out.println("USER Entity NULL");
+		}
+		UserDao daoUser = new UserDao();
+		daoUser.setId(userEntity.getId());
+		daoUser.setAccessKey(userEntity.getAcessKey());
+		daoUser.setActive(userEntity.getActive());
+		daoUser.setName(userEntity.getName());
+		daoUser.setBalance(userEntity.getBalance());
+		daoUser.setCreated_at(userEntity.getCreated_at());
+		daoUser.setUpdated_at(LocalDateTime.now());
+		return daoUser;
+	}
 }
