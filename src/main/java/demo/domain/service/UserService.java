@@ -3,14 +3,17 @@ package demo.domain.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import demo.domain.entity.UserEntity;
 import demo.domain.enums.ErrorType;
+import demo.domain.exception.InvalidAccessKeyException;
 import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.gateway.UserGateway;
-import demo.domain.web.UserDto;
+import demo.domain.web.dto.UserDto;
+import demo.domain.web.dto.request.WithdrawalRequest;
 import demo.resources.database.UserRepository;
 
 @Service
@@ -33,6 +36,22 @@ public class UserService {
 
 	public UserEntity createUser(UserDto userDto) throws InvalidBalanceException {
 		return userGateway.createUser(userDto);
+	}
+	
+	public UserEntity withdrawById(Integer id, String accessKey, Integer value) throws NotFoundException, InvalidBalanceException, InvalidAccessKeyException {
+		UserEntity user = getUserById(id);
+		System.out.println("User Acess Key: "+user.getAcessKey());
+		System.out.println("AcessKey on request:" + accessKey);
+		if(user == null || !user.getAcessKey().equals(accessKey)){
+			throw new InvalidAccessKeyException("The Access Key, is not equal, try again!", ErrorType.INVALID_KEY);
+			}
+		if(user.getBalance() <=0 || value > user.getBalance()) {
+			throw new InvalidBalanceException("This account not have balance.", ErrorType.INVALID_VALUE);
+		} 
+		if(value <=0) {
+			throw new InvalidBalanceException("The value for withdraw is invalid.", ErrorType.INVALID_VALUE_FORMAT);
+		}
+		return userGateway.withdrawById(id,accessKey,value);
 	}
 
 	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException, NotFoundException {

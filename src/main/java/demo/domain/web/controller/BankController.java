@@ -1,4 +1,4 @@
-package demo.domain.web;
+package demo.domain.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import demo.domain.entity.UserEntity;
+import demo.domain.exception.InvalidAccessKeyException;
 import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.service.UserService;
+import demo.domain.web.dto.UserDto;
+import demo.domain.web.dto.request.WithdrawalRequest;
 
 @RestController
 @RequestMapping("/users")
@@ -37,6 +40,13 @@ public class BankController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
 	}
 	
+	@PatchMapping("/{id}/withdraw")
+		public ResponseEntity<UserEntity> withdrawById(@PathVariable Integer id, @RequestBody WithdrawalRequest withdrawalRequest) throws NotFoundException, InvalidBalanceException, InvalidAccessKeyException{
+		System.out.println("User Acess Key: "+ withdrawalRequest.getAccessKey());
+		System.out.println("AcessKey on request:" + withdrawalRequest.getValue());
+		return ResponseEntity.ok(userService.withdrawById(id,withdrawalRequest.getAccessKey(),withdrawalRequest.getValue()));
+		}
+		
 	@PatchMapping("/{id}/active/{active}")
 	public ResponseEntity<UserEntity> changeActivity(@PathVariable Integer id, @PathVariable Boolean active) throws NotFoundException {
 		return ResponseEntity.ok(userService.changeActivityUser(id, active));

@@ -14,7 +14,8 @@ import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.gateway.UserGateway;
 import demo.domain.service.ValidationService;
-import demo.domain.web.UserDto;
+import demo.domain.web.dto.UserDto;
+import demo.domain.web.dto.request.WithdrawalRequest;
 import demo.resources.dao.UserDao;
 import demo.resources.database.UserRepository;
 
@@ -75,6 +76,13 @@ public class UserGatewayImpl implements UserGateway{
 		return user;
 	}
 	
+	@Override
+	public UserEntity withdrawById(Integer id, String accessKey, Integer value) throws NotFoundException {
+		UserEntity user = findById(id);
+		user.setBalance(user.getBalance() - value);
+		userRepository.save(entityToDao(user));
+		return user;
+	}
 	
 	private UserDao toDao(UserDto userDto) {
 		UserDao userDao = new UserDao();
@@ -117,4 +125,6 @@ public class UserGatewayImpl implements UserGateway{
 		daoUser.setUpdated_at(LocalDateTime.now());
 		return daoUser;
 	}
+
+
 }

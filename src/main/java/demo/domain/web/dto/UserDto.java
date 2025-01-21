@@ -1,4 +1,4 @@
-package demo.domain.web;
+package demo.domain.web.dto;
 
 
 import lombok.AllArgsConstructor;
