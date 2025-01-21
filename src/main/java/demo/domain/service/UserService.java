@@ -59,6 +59,18 @@ public class UserService {
 		}
 		return userGateway.depositById(id,value);
 	}
+	
+	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException, InvalidAccessKeyException, InvalidBalanceException {
+		UserEntity user = getUserById(id);
+		UserEntity receptor = getUserById(receptorId);
+		if(!user.getAcessKey().equals(accessKey)){
+			throw new InvalidAccessKeyException("The Access Key, is not equal, try again!", ErrorType.INVALID_KEY);
+		}
+		if(value <=0 || user.getBalance() < value) {
+			throw new InvalidBalanceException("The account no have value amount",ErrorType.INVALID_VALUE);
+		}
+		return userGateway.transferToId(id,accessKey,receptorId,value);
+	}
 
 	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException, NotFoundException {
 		return userGateway.updateUser(id, userDto);
@@ -71,6 +83,7 @@ public class UserService {
 			throw new NotFoundException("The user not founded",ErrorType.NOT_FOUND);
 		}
 	}
+
 
 
 	

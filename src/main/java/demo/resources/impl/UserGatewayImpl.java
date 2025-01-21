@@ -91,6 +91,18 @@ public class UserGatewayImpl implements UserGateway{
 		userRepository.save(entityToDao(user));
 		return user;
 	}
+	
+	@Override
+	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException {
+		UserEntity user = findById(id);
+		UserEntity receptor = findById(receptorId);
+		user.setBalance(user.getBalance()-value);
+		receptor.setBalance(receptor.getBalance()+value);
+		userRepository.save(entityToDao(user));
+		userRepository.save(entityToDao(receptor));
+		System.out.println("Transfer" + "Name: "+user.getName() +"Transfer to: "+ receptor.getName()+"Amount: "+value+ "Your balance is:"+user.getBalance());;
+		return user;
+	}
 
 	
 	private UserDao toDao(UserDto userDto) {

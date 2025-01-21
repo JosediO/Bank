@@ -17,5 +17,6 @@ public interface UserGateway {
 	public Boolean deletUser(Integer id);
 	public UserEntity withdrawById(Integer id, String accessKey, Integer value) throws NotFoundException;
 	public UserEntity depositById(Integer id, Integer value) throws NotFoundException;
+	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException;
 
 }

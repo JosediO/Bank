@@ -22,6 +22,7 @@ import demo.domain.exception.NotFoundException;
 import demo.domain.service.UserService;
 import demo.domain.web.dto.UserDto;
 import demo.domain.web.dto.request.DepositRequest;
+import demo.domain.web.dto.request.TransferRequest;
 import demo.domain.web.dto.request.WithdrawalRequest;
 
 @RestController
@@ -52,8 +53,13 @@ public class BankController {
 	}
 		
 	@PatchMapping("/{id}/active/{active}")
-	public ResponseEntity<UserEntity> changeActivity(@PathVariable Integer id, @PathVariable Boolean active) throws NotFoundException {
+	public ResponseEntity<UserEntity> changeActivity(@PathVariable Integer id, Boolean active) throws NotFoundException {
 		return ResponseEntity.ok(userService.changeActivityUser(id, active));
+	}
+	
+	@PatchMapping("/{id}/transfer/to")
+	public ResponseEntity<UserEntity> transferToId(@PathVariable Integer id, @RequestBody TransferRequest transferRequest) throws NotFoundException, InvalidAccessKeyException, InvalidBalanceException{
+		return ResponseEntity.ok(userService.transferToId(id,transferRequest.getAccessKey(),transferRequest.getReceptorId(),transferRequest.getValue()));
 	}
 	
 	@PutMapping
