@@ -40,9 +40,7 @@ public class UserService {
 	
 	public UserEntity withdrawById(Integer id, String accessKey, Integer value) throws NotFoundException, InvalidBalanceException, InvalidAccessKeyException {
 		UserEntity user = getUserById(id);
-		System.out.println("User Acess Key: "+user.getAcessKey());
-		System.out.println("AcessKey on request:" + accessKey);
-		if(user == null || !user.getAcessKey().equals(accessKey)){
+		if(!user.getAcessKey().equals(accessKey)){
 			throw new InvalidAccessKeyException("The Access Key, is not equal, try again!", ErrorType.INVALID_KEY);
 			}
 		if(user.getBalance() <=0 || value > user.getBalance()) {
@@ -52,6 +50,14 @@ public class UserService {
 			throw new InvalidBalanceException("The value for withdraw is invalid.", ErrorType.INVALID_VALUE_FORMAT);
 		}
 		return userGateway.withdrawById(id,accessKey,value);
+	}
+	
+	public UserEntity depositById(Integer id, Integer value) throws InvalidBalanceException, NotFoundException {
+		UserEntity user = getUserById(id);
+		if(value <=0) {
+			throw new InvalidBalanceException("The value for deposit is invalid.", ErrorType.INVALID_VALUE);
+		}
+		return userGateway.depositById(id,value);
 	}
 
 	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException, NotFoundException {
@@ -65,5 +71,7 @@ public class UserService {
 			throw new NotFoundException("The user not founded",ErrorType.NOT_FOUND);
 		}
 	}
+
+
 	
 }

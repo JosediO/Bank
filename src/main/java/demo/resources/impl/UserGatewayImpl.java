@@ -84,6 +84,15 @@ public class UserGatewayImpl implements UserGateway{
 		return user;
 	}
 	
+	@Override
+	public UserEntity depositById(Integer id, Integer value) throws NotFoundException {
+		UserEntity user = findById(id);
+		user.setBalance(user.getBalance() + value);
+		userRepository.save(entityToDao(user));
+		return user;
+	}
+
+	
 	private UserDao toDao(UserDto userDto) {
 		UserDao userDao = new UserDao();
 		userDao.setId(userDto.getId());
@@ -125,6 +134,5 @@ public class UserGatewayImpl implements UserGateway{
 		daoUser.setUpdated_at(LocalDateTime.now());
 		return daoUser;
 	}
-
 
 }

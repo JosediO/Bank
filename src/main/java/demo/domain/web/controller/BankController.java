@@ -21,6 +21,7 @@ import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.service.UserService;
 import demo.domain.web.dto.UserDto;
+import demo.domain.web.dto.request.DepositRequest;
 import demo.domain.web.dto.request.WithdrawalRequest;
 
 @RestController
@@ -42,10 +43,13 @@ public class BankController {
 	
 	@PatchMapping("/{id}/withdraw")
 		public ResponseEntity<UserEntity> withdrawById(@PathVariable Integer id, @RequestBody WithdrawalRequest withdrawalRequest) throws NotFoundException, InvalidBalanceException, InvalidAccessKeyException{
-		System.out.println("User Acess Key: "+ withdrawalRequest.getAccessKey());
-		System.out.println("AcessKey on request:" + withdrawalRequest.getValue());
 		return ResponseEntity.ok(userService.withdrawById(id,withdrawalRequest.getAccessKey(),withdrawalRequest.getValue()));
 		}
+	
+	@PatchMapping("/{id}/deposit")
+		public ResponseEntity<UserEntity> depositById(@PathVariable Integer id, @RequestBody  DepositRequest depositRequest) throws InvalidBalanceException, NotFoundException{
+		return ResponseEntity.ok(userService.depositById(id,depositRequest.getValue()));
+	}
 		
 	@PatchMapping("/{id}/active/{active}")
 	public ResponseEntity<UserEntity> changeActivity(@PathVariable Integer id, @PathVariable Boolean active) throws NotFoundException {

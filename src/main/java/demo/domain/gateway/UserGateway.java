@@ -16,5 +16,6 @@ public interface UserGateway {
 	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException, NotFoundException;
 	public Boolean deletUser(Integer id);
 	public UserEntity withdrawById(Integer id, String accessKey, Integer value) throws NotFoundException;
+	public UserEntity depositById(Integer id, Integer value) throws NotFoundException;
 
 }
