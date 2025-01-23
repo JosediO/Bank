@@ -15,6 +15,7 @@ import demo.domain.exception.NotFoundException;
 import demo.domain.gateway.UserGateway;
 import demo.domain.service.ValidationService;
 import demo.domain.web.dto.UserDto;
+import demo.domain.web.dto.request.UpdateRequest;
 import demo.domain.web.dto.request.WithdrawalRequest;
 import demo.resources.dao.UserDao;
 import demo.resources.database.UserRepository;
@@ -48,9 +49,6 @@ public class UserGatewayImpl implements UserGateway{
 	@Override
 	public UserEntity createUser(UserDto userDto) throws InvalidBalanceException {
 		UserDao userDao = toDao(userDto);
-		if(userDao.getBalance() < 0) {
-			throw new InvalidBalanceException("Insert a positive balance.",ErrorType.INVALID_VALUE_FORMAT);
-		}
 		UserDao saveDaoUser = userRepository.save(userDao);
 		return saveDaoUser.toEntity();
 	}
@@ -65,14 +63,19 @@ public class UserGatewayImpl implements UserGateway{
 	}
 	
 	@Override
-	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException, NotFoundException {
+	public UserEntity updateUser(Integer id, UpdateRequest updateRequest) throws InvalidNameException, NotFoundException {
 		UserEntity user = findById(id);
-		if(userDto.getName() != null) {
-			validationService.validationName(userDto.getName());
-			user.setName(userDto.getName());
+		if(updateRequest.getAccessKey() != null) {
+			user.setAcessKey(updateRequest.getAccessKey());
 		}
+		if(updateRequest.getActive() != null){
+			user.setActive(updateRequest.getActive());
+		}
+		if(updateRequest.getName() != null){
+			user.setName(updateRequest.getName());
+		};
 		user.setUpdated_at(LocalDateTime.now());
-		
+		userRepository.save(entityToDao(user));
 		return user;
 	}
 	

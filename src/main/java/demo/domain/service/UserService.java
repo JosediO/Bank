@@ -1,5 +1,8 @@
 package demo.domain.service;
 
+import java.util.Optional;
+
+import org.hibernate.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,9 +13,11 @@ import demo.domain.enums.ErrorType;
 import demo.domain.exception.InvalidAccessKeyException;
 import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
+import demo.domain.exception.NotActiveException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.gateway.UserGateway;
 import demo.domain.web.dto.UserDto;
+import demo.domain.web.dto.request.UpdateRequest;
 import demo.domain.web.dto.request.WithdrawalRequest;
 import demo.resources.database.UserRepository;
 
@@ -21,6 +26,9 @@ public class UserService {
 
 	@Autowired
 	private UserGateway userGateway;
+	
+	@Autowired
+	private ValidationService validationService;
 	
 	public UserEntity getUserById(Integer id) throws NotFoundException {
 		UserEntity user = userGateway.findById(id);
@@ -34,8 +42,15 @@ public class UserService {
 		return userGateway.changeActivityUser(id,active);
 	}
 
-	public UserEntity createUser(UserDto userDto) throws InvalidBalanceException {
-		return userGateway.createUser(userDto);
+	public UserEntity createUser(UserDto userDto) throws InvalidBalanceException, InvalidNameException, NotActiveException {
+			validationService.validationName(userDto.getName());
+		if(userDto.getBalance() < 0) {
+			throw new InvalidBalanceException("Insert a positive balance.",ErrorType.INVALID_VALUE_FORMAT);
+		}
+		if(userDto.getActive() == false) {
+			throw new NotActiveException("Dont create user inactive, please select ACTIVE mode.",ErrorType.INVALID_VALUE);
+		}
+			return userGateway.createUser(userDto);
 	}
 	
 	public UserEntity withdrawById(Integer id, String accessKey, Integer value) throws NotFoundException, InvalidBalanceException, InvalidAccessKeyException {
@@ -72,9 +87,23 @@ public class UserService {
 		return userGateway.transferToId(id,accessKey,receptorId,value);
 	}
 
-	public UserEntity updateUser(Integer id, UserDto userDto) throws InvalidNameException, NotFoundException {
-		return userGateway.updateUser(id, userDto);
-	}
+	public UserEntity updateUser(Integer id, UpdateRequest updateRequest) throws InvalidNameException, InvalidAccessKeyException, NotFoundException, NotActiveException {
+		UserEntity user = getUserById(id);
+		if(updateRequest.getAccessKey()	!= null) {	
+			if(updateRequest.getAccessKey().length() != 4) {
+				throw new InvalidAccessKeyException("The Access Key is invalid!", ErrorType.NOT_UPDATED);
+			}
+		}
+		if(updateRequest.getActive() != null) {
+			if(updateRequest.getActive() == false) {
+				throw new NotActiveException("The user status is not ACTIVE", ErrorType.NOT_UPDATED);	
+			}
+		}
+		if(updateRequest.getName()!= null) {
+			validationService.validationName(updateRequest.getName());
+		}
+		return userGateway.updateUser(id, updateRequest);
+		}
 
 	public ResponseEntity<Void> deletUser(Integer id) throws NotFoundException {
 		if(userGateway.deletUser(id)) {;

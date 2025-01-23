@@ -18,11 +18,13 @@ import demo.domain.entity.UserEntity;
 import demo.domain.exception.InvalidAccessKeyException;
 import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
+import demo.domain.exception.NotActiveException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.service.UserService;
 import demo.domain.web.dto.UserDto;
 import demo.domain.web.dto.request.DepositRequest;
 import demo.domain.web.dto.request.TransferRequest;
+import demo.domain.web.dto.request.UpdateRequest;
 import demo.domain.web.dto.request.WithdrawalRequest;
 
 @RestController
@@ -38,7 +40,7 @@ public class BankController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<UserEntity> createUser(@RequestBody UserDto userDto) throws InvalidBalanceException{
+	public ResponseEntity<UserEntity> createUser(@RequestBody UserDto userDto) throws InvalidBalanceException, InvalidNameException, NotActiveException{
 		return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
 	}
 	
@@ -62,9 +64,9 @@ public class BankController {
 		return ResponseEntity.ok(userService.transferToId(id,transferRequest.getAccessKey(),transferRequest.getReceptorId(),transferRequest.getValue()));
 	}
 	
-	@PutMapping
-	public ResponseEntity<UserEntity> updateUser(@RequestParam Integer id, UserDto userDto) throws InvalidNameException, NotFoundException{
-		return ResponseEntity.ok(userService.updateUser(id, userDto));
+	@PatchMapping("/{id}/update")
+	public ResponseEntity<UserEntity> updateUser(@PathVariable Integer id, @RequestBody UpdateRequest updateRequest) throws InvalidNameException, NotFoundException, NotActiveException, InvalidAccessKeyException{
+		return ResponseEntity.ok(userService.updateUser(id, updateRequest));
 	}
 	
 	@DeleteMapping("/{id}")

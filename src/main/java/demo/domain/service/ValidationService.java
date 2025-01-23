@@ -11,11 +11,10 @@ public class ValidationService {
 	private final Integer MIN_AGE = 17;
 	
 	public String validationName(String name) throws InvalidNameException {
-		if(!name.matches
-				("^[A-Za-z]{3,}(?:\\s+[A-Za-z]{3,}){3,49}$")){
-			throw new InvalidNameException("The name is invalid, insert a valid name.", ErrorType.INVALID_DATA_FORMAT);
+		
+		if(name.length() < 3 || name.length() > 50) {
+			throw new InvalidNameException("The first name need 3 or more letters, and all name needs contains max 50 caracters.",ErrorType.INVALID_DATA_FORMAT);
 		}
-		return name;	
+		return name;
 	}
-
 }
