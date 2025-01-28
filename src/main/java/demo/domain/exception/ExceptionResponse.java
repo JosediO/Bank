@@ -1,4 +1,4 @@
-package demo.domain.entity;
+package demo.domain.exception;
 
 import demo.domain.enums.ErrorType;
 import lombok.Getter;

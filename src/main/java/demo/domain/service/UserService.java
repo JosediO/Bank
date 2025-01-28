@@ -1,12 +1,8 @@
 package demo.domain.service;
 
-import java.util.Optional;
-
-import org.hibernate.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import demo.domain.entity.UserEntity;
 import demo.domain.enums.ErrorType;
@@ -18,8 +14,7 @@ import demo.domain.exception.NotFoundException;
 import demo.domain.gateway.UserGateway;
 import demo.domain.web.dto.UserDto;
 import demo.domain.web.dto.request.UpdateRequest;
-import demo.domain.web.dto.request.WithdrawalRequest;
-import demo.resources.database.UserRepository;
+
 
 @Service
 public class UserService {

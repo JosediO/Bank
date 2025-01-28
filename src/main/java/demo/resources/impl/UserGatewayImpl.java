@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import demo.domain.entity.HistoricEntity;
 import demo.domain.entity.UserEntity;
 import demo.domain.enums.ErrorType;
+import demo.domain.enums.ServiceType;
 import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
@@ -18,6 +20,7 @@ import demo.domain.web.dto.UserDto;
 import demo.domain.web.dto.request.UpdateRequest;
 import demo.domain.web.dto.request.WithdrawalRequest;
 import demo.resources.dao.UserDao;
+import demo.resources.database.HistoricRepository;
 import demo.resources.database.UserRepository;
 
 @Component
@@ -27,7 +30,10 @@ public class UserGatewayImpl implements UserGateway{
 	private UserRepository userRepository;
 	
 	@Autowired
-	private ValidationService validationService;
+	private HistoricRepository historicRepository;
+	
+	@Autowired 
+	private HistoricEntity historicEntity;
 
 	@Override
 	public UserEntity findById(Integer id) throws NotFoundException {
@@ -84,6 +90,14 @@ public class UserGatewayImpl implements UserGateway{
 		UserEntity user = findById(id);
 		user.setBalance(user.getBalance() - value);
 		userRepository.save(entityToDao(user));
+		HistoricEntity historic = new HistoricEntity();
+		historic.setIdUser(user.getId());
+		historic.setNameUser(user.getName());
+		historic.setBalance(user.getBalance());
+		historic.setServiceType(ServiceType.WITHDRAW);
+		historic.setValueTransaction(value);
+		historic.setDate(LocalDateTime.now());
+		historicRepository.save(historic);
 		return user;
 	}
 	
@@ -92,6 +106,14 @@ public class UserGatewayImpl implements UserGateway{
 		UserEntity user = findById(id);
 		user.setBalance(user.getBalance() + value);
 		userRepository.save(entityToDao(user));
+		HistoricEntity historic = new HistoricEntity();
+		historic.setIdUser(user.getId());
+		historic.setNameUser(user.getName());
+		historic.setBalance(user.getBalance());
+		historic.setServiceType(ServiceType.DEPOSIT);
+		historic.setValueTransaction(value);
+		historic.setDate(LocalDateTime.now());
+		historicRepository.save(historic);
 		return user;
 	}
 	
@@ -103,7 +125,16 @@ public class UserGatewayImpl implements UserGateway{
 		receptor.setBalance(receptor.getBalance()+value);
 		userRepository.save(entityToDao(user));
 		userRepository.save(entityToDao(receptor));
-		System.out.println("Transfer" + "Name: "+user.getName() +"Transfer to: "+ receptor.getName()+"Amount: "+value+ "Your balance is:"+user.getBalance());;
+		HistoricEntity historic = new HistoricEntity();
+		historic.setIdUser(user.getId());
+		historic.setNameUser(user.getName());
+		historic.setBalance(user.getBalance());
+		historic.setServiceType(ServiceType.TRANSFER);
+		historic.setValueTransaction(value);
+		historic.setToId(receptorId);
+		historic.setNameTo(receptor.getName());
+		historic.setDate(LocalDateTime.now());
+		historicRepository.save(historic);
 		return user;
 	}
 
