@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import demo.domain.entity.UserEntity;
@@ -13,10 +12,8 @@ import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.gateway.UserGateway;
-import demo.domain.service.ValidationService;
 import demo.domain.web.dto.UserDto;
 import demo.domain.web.dto.request.UpdateRequest;
-import demo.domain.web.dto.request.WithdrawalRequest;
 import demo.resources.dao.UserDao;
 import demo.resources.database.UserRepository;
 
@@ -25,9 +22,6 @@ public class UserGatewayImpl implements UserGateway{
 	
 	@Autowired
 	private UserRepository userRepository;
-	
-	@Autowired
-	private ValidationService validationService;
 
 	@Override
 	public UserEntity findById(Integer id) throws NotFoundException {
@@ -39,8 +33,7 @@ public class UserGatewayImpl implements UserGateway{
 	}
 	
 	@Override
-	public UserEntity changeActivityUser(Integer id, Boolean active) throws NotFoundException {
-		UserEntity user = findById(id);
+	public UserEntity changeActivityUser(UserEntity user, Boolean active){
 		user.setActive(!user.getActive());
 		userRepository.save(entityToDao(user));
 		return user;
@@ -80,16 +73,14 @@ public class UserGatewayImpl implements UserGateway{
 	}
 	
 	@Override
-	public UserEntity withdrawById(Integer id, String accessKey, Integer value) throws NotFoundException {
-		UserEntity user = findById(id);
+	public UserEntity withdrawById(UserEntity user, Integer value) {
 		user.setBalance(user.getBalance() - value);
 		userRepository.save(entityToDao(user));
 		return user;
 	}
 	
 	@Override
-	public UserEntity depositById(Integer id, Integer value) throws NotFoundException {
-		UserEntity user = findById(id);
+	public UserEntity depositById(UserEntity user, Integer value) {
 		user.setBalance(user.getBalance() + value);
 		userRepository.save(entityToDao(user));
 		return user;

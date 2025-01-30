@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import demo.domain.entity.UserEntity;
@@ -44,27 +43,27 @@ public class BankController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
 	}
 	
-	@PatchMapping("/{id}/withdraw")
+	@PutMapping("/{id}/withdraw")
 		public ResponseEntity<UserEntity> withdrawById(@PathVariable Integer id, @RequestBody WithdrawalRequest withdrawalRequest) throws NotFoundException, InvalidBalanceException, InvalidAccessKeyException{
 		return ResponseEntity.ok(userService.withdrawById(id,withdrawalRequest.getAccessKey(),withdrawalRequest.getValue()));
 		}
 	
-	@PatchMapping("/{id}/deposit")
+	@PutMapping("/{id}/deposit")
 		public ResponseEntity<UserEntity> depositById(@PathVariable Integer id, @RequestBody  DepositRequest depositRequest) throws InvalidBalanceException, NotFoundException{
 		return ResponseEntity.ok(userService.depositById(id,depositRequest.getValue()));
 	}
 		
 	@PatchMapping("/{id}/active/{active}")
-	public ResponseEntity<UserEntity> changeActivity(@PathVariable Integer id, Boolean active) throws NotFoundException {
+	public ResponseEntity<UserEntity> changeActivity(@PathVariable Integer id, Boolean active) throws NotFoundException, NotActiveException {
 		return ResponseEntity.ok(userService.changeActivityUser(id, active));
 	}
 	
-	@PatchMapping("/{id}/transfer/to")
+	@PutMapping("/{id}/transfer/to")
 	public ResponseEntity<UserEntity> transferToId(@PathVariable Integer id, @RequestBody TransferRequest transferRequest) throws NotFoundException, InvalidAccessKeyException, InvalidBalanceException{
 		return ResponseEntity.ok(userService.transferToId(id,transferRequest.getAccessKey(),transferRequest.getReceptorId(),transferRequest.getValue()));
 	}
 	
-	@PatchMapping("/{id}/update")
+	@PutMapping("/{id}/update")
 	public ResponseEntity<UserEntity> updateUser(@PathVariable Integer id, @RequestBody UpdateRequest updateRequest) throws InvalidNameException, NotFoundException, NotActiveException, InvalidAccessKeyException{
 		return ResponseEntity.ok(userService.updateUser(id, updateRequest));
 	}
