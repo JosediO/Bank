@@ -8,5 +8,6 @@ import lombok.Setter;
 public class DepositRequest {
 	
 	private Integer value;
+	private String accessKey;
 
 }

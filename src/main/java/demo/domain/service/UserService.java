@@ -12,9 +12,10 @@ import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotActiveException;
 import demo.domain.exception.NotFoundException;
+import demo.domain.exception.NullException;
 import demo.domain.gateway.UserGateway;
-import demo.domain.web.dto.UserDto;
 import demo.domain.web.dto.request.UpdateRequest;
+import demo.domain.web.dto.response.UserDto;
 
 @Service
 public class UserService {
@@ -25,7 +26,7 @@ public class UserService {
 	@Autowired
 	private ValidationService validationService;
 	
-	public UserEntity getUserById(Integer id) throws NotFoundException {
+	public UserEntity getUserById(Integer id) throws NotFoundException, NullException {
 		UserEntity user = userGateway.findById(id);
 		if(user == null) {
 			throw new NotFoundException("Not Found USER for id:"+id, ErrorType.NOT_FOUND);
@@ -33,18 +34,18 @@ public class UserService {
 		return user;
 	}
 
-	public UserEntity changeActivityUser(Integer id, Boolean active) throws NotFoundException, NotActiveException {
+	public UserEntity changeActivityUser(Integer id, Boolean active) throws NotFoundException, NotActiveException, NullException {
 		UserEntity user = userGateway.findById(id);
 		validationService.validationStatus(active);
-		return userGateway.changeActivityUser(user,active);
+		return userGateway.changeActivityUser(user);
 	}
 
-	public UserEntity createUser(UserDto userDto) throws InvalidBalanceException, InvalidNameException, NotActiveException {
-		validationService.validationCreateUser(userDto.getName(), userDto.getBalance(), userDto.getActive());
-		return userGateway.createUser(userDto);
+	public UserEntity createUser(UserEntity userEntity) throws InvalidBalanceException, InvalidNameException, NotActiveException {
+		validationService.validationCreateUser(userEntity.getName(), userEntity.getBalance(), userEntity.getActive());
+		return userGateway.createUser(userEntity);
 	}
 	
-	public UserEntity withdrawById(Integer id, String accessKey, Integer value) throws NotFoundException, InvalidBalanceException, InvalidAccessKeyException {
+	public UserEntity withdrawById(Integer id, String accessKey, Integer value) throws NotFoundException, InvalidBalanceException, InvalidAccessKeyException, NullException {
 		UserEntity user = getUserById(id);
 		validationService.validationAccessKey(accessKey, user.getAcessKey());
 		validationService.validationValidBalance(user.getBalance(), value);
@@ -52,13 +53,14 @@ public class UserService {
 		return userGateway.withdrawById(user, value);
 	}
 	
-	public UserEntity depositById(Integer id, Integer value) throws InvalidBalanceException, NotFoundException {
+	public UserEntity depositById(Integer id, Integer value, String accessKey) throws InvalidBalanceException, NotFoundException, InvalidAccessKeyException, NullException {
 		UserEntity user = getUserById(id);
+		validationService.validationAccessKey(accessKey, user.getAcessKey());
 		validationService.validationPositiveBalance(user.getBalance());
 		return userGateway.depositById(user,value);
 	}
 	
-	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException, InvalidAccessKeyException, InvalidBalanceException {
+	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException, InvalidAccessKeyException, InvalidBalanceException, NullException {
 		UserEntity user = getUserById(id);
 		getUserById(receptorId);
 		validationService.validationAccessKey(accessKey, user.getAcessKey());
@@ -66,8 +68,8 @@ public class UserService {
 		return userGateway.transferToId(id,accessKey,receptorId,value);
 	}
 
-	public UserEntity updateUser(Integer id, UpdateRequest updateRequest) throws InvalidNameException, InvalidAccessKeyException, NotFoundException, NotActiveException {
-		getUserById(id);
+	public UserEntity updateUser(Integer id, UpdateRequest updateRequest) throws InvalidNameException, InvalidAccessKeyException, NotFoundException, NotActiveException, NullException {
+		UserEntity user = getUserById(id);
 		if(updateRequest.getAccessKey()	!= null && updateRequest.getAccessKey().length() != 4 ) {
 				throw new InvalidAccessKeyException("The Access Key is invalid!", ErrorType.NOT_UPDATED);
 			}
@@ -77,15 +79,12 @@ public class UserService {
 		if(updateRequest.getName()!= null) {
 			validationService.validationName(updateRequest.getName());
 		}
-		return userGateway.updateUser(id, updateRequest);
+		return userGateway.updateUser(user, updateRequest);
 		}
 
-	public ResponseEntity<Void> deletUser(Integer id) throws NotFoundException {
-		if(userGateway.deletUser(id)) {;
-			return ResponseEntity.noContent().build();
-		}else {
-			throw new NotFoundException("The user not founded",ErrorType.NOT_FOUND);
-		}
+	public UserEntity deletUser(Integer id) throws NotFoundException, NullException {
+		UserEntity user = getUserById(id);
+		return userGateway.deletUser(user);
 	}
 
 

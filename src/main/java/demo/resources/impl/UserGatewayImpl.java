@@ -11,8 +11,8 @@ import demo.domain.enums.ErrorType;
 import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
+import demo.domain.exception.NullException;
 import demo.domain.gateway.UserGateway;
-import demo.domain.web.dto.UserDto;
 import demo.domain.web.dto.request.UpdateRequest;
 import demo.resources.dao.UserDao;
 import demo.resources.database.UserRepository;
@@ -24,70 +24,64 @@ public class UserGatewayImpl implements UserGateway{
 	private UserRepository userRepository;
 
 	@Override
-	public UserEntity findById(Integer id) throws NotFoundException {
+	public UserEntity findById(Integer id) throws NotFoundException, NullException {
 		 Optional<UserDao> optionalUser = userRepository.findById(id);
-		 if (optionalUser.isEmpty()) {
-		        throw new NotFoundException("User not found for ID: " + id, ErrorType.NOT_FOUND);
-		    }
-		    return toEntity(optionalUser.get());
+		 return toEntity(optionalUser.get());
 	}
 	
 	@Override
-	public UserEntity changeActivityUser(UserEntity user, Boolean active){
+	public UserEntity changeActivityUser(UserEntity user) throws NullException{
 		user.setActive(!user.getActive());
 		userRepository.save(entityToDao(user));
 		return user;
 	}
 	
 	@Override
-	public UserEntity createUser(UserDto userDto) throws InvalidBalanceException {
-		UserDao userDao = toDao(userDto);
+	public UserEntity createUser(UserEntity userEntity) throws InvalidBalanceException {
+		UserDao userDao = toDao(userEntity);
 		UserDao saveDaoUser = userRepository.save(userDao);
 		return saveDaoUser.toEntity();
 	}
 	
 	@Override
-	public Boolean deletUser(Integer id) {
-		if(userRepository.existsById(id)) {
-			userRepository.deleteById(id);
-			return true;
-		}
-		return false;
+	public UserEntity deletUser(UserEntity userEntity) {
+			userRepository.deleteById(userEntity.getId());
+			return userEntity;
 	}
 	
 	@Override
-	public UserEntity updateUser(Integer id, UpdateRequest updateRequest) throws InvalidNameException, NotFoundException {
-		UserEntity user = findById(id);
+	public UserEntity updateUser(UserEntity userEntity, UpdateRequest updateRequest) throws InvalidNameException, NotFoundException, NullException {
+
 		if(updateRequest.getAccessKey() != null) {
-			user.setAcessKey(updateRequest.getAccessKey());
+			userEntity.setAcessKey(updateRequest.getAccessKey());
 		}
 		if(updateRequest.getActive() != null){
-			user.setActive(updateRequest.getActive());
+			userEntity.setActive(updateRequest.getActive());
 		}
 		if(updateRequest.getName() != null){
-			user.setName(updateRequest.getName());
+			userEntity.setName(updateRequest.getName());
 		};
-		user.setUpdated_at(LocalDateTime.now());
-		userRepository.save(entityToDao(user));
-		return user;
+		userEntity.setUpdated_at(LocalDateTime.now());
+		userRepository.save(entityToDao(userEntity));
+		return userEntity;
 	}
 	
 	@Override
-	public UserEntity withdrawById(UserEntity user, Integer value) {
+	public UserEntity withdrawById(UserEntity user, Integer value) throws NullException {
 		user.setBalance(user.getBalance() - value);
 		userRepository.save(entityToDao(user));
 		return user;
 	}
 	
 	@Override
-	public UserEntity depositById(UserEntity user, Integer value) {
+	public UserEntity depositById(UserEntity user, Integer value) throws NullException {
 		user.setBalance(user.getBalance() + value);
 		userRepository.save(entityToDao(user));
 		return user;
 	}
 	
 	@Override
-	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException {
+	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException, NullException {
 		UserEntity user = findById(id);
 		UserEntity receptor = findById(receptorId);
 		user.setBalance(user.getBalance()-value);
@@ -99,21 +93,21 @@ public class UserGatewayImpl implements UserGateway{
 	}
 
 	
-	private UserDao toDao(UserDto userDto) {
+	private UserDao toDao(UserEntity userEntity) {
 		UserDao userDao = new UserDao();
-		userDao.setId(userDto.getId());
-		userDao.setAccessKey(userDto.getAcessKey());
-		userDao.setActive(userDto.getActive());
-		userDao.setName(userDto.getName());
-		userDao.setBalance(userDto.getBalance());
+		userDao.setId(userEntity.getId());
+		userDao.setAccessKey(userEntity.getAcessKey());
+		userDao.setActive(userEntity.getActive());
+		userDao.setName(userEntity.getName());
+		userDao.setBalance(userEntity.getBalance());
 		userDao.setCreated_at(LocalDateTime.now());
 		userDao.setUpdated_at(LocalDateTime.now());
 		return userDao;
 	}
 	
-	private UserEntity toEntity(UserDao userDao) {
+	private UserEntity toEntity(UserDao userDao) throws NullException {
 		if(userDao == null) {
-			System.out.println("USER DAO NULL");
+			throw new NullException("User DAO is Null",ErrorType.NULL);
 		}
 		UserEntity entityUser = new UserEntity();
 		entityUser.setId(userDao.getId());
@@ -126,9 +120,9 @@ public class UserGatewayImpl implements UserGateway{
 		return entityUser;
 	}
 
-	private UserDao entityToDao (UserEntity userEntity) {
+	private UserDao entityToDao (UserEntity userEntity) throws NullException {
 		if(userEntity == null) {
-			System.out.println("USER Entity NULL");
+			throw new NullException("User Entity is Null",ErrorType.NULL);
 		}
 		UserDao daoUser = new UserDao();
 		daoUser.setId(userEntity.getId());
