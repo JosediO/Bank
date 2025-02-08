@@ -1,6 +1,8 @@
 package demo.domain.service;
 
 
+import demo.domain.entity.Transfer;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -60,12 +62,24 @@ public class UserService {
 		return userGateway.depositById(user,value);
 	}
 	
-	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException, InvalidAccessKeyException, InvalidBalanceException, NullException {
+	public UserEntity transferToId(Integer id, Transfer transfer) throws NotFoundException, InvalidAccessKeyException, InvalidBalanceException, NullException {
 		UserEntity user = getUserById(id);
-		getUserById(receptorId);
-		validationService.validationAccessKey(accessKey, user.getAcessKey());
-		validationService.validationValidBalance(user.getBalance(), value);
-		return userGateway.transferToId(id,accessKey,receptorId,value);
+		UserEntity receptor = getUserById(transfer.getReceptorId());
+
+		//Validou o que precisava
+		validationService.validationAccessKey(transfer.getAccessKey(), user.getAcessKey());
+		validationService.validationValidBalance(user.getBalance(), transfer.getValue());
+
+		//Processamento das informacoes
+//		user.setBalance(user.getBalance() - transfer.getValue());
+//		receptor.setBalance(receptor.getBalance() + transfer.getValue());
+		user.subValue(transfer.getValue());
+		receptor.addValue(transfer.getValue());
+
+		UserEntity userUpdated = userGateway.update(user);
+		userGateway.update(receptor);
+
+		return userUpdated;
 	}
 
 	public UserEntity updateUser(Integer id, UpdateRequest updateRequest) throws InvalidNameException, InvalidAccessKeyException, NotFoundException, NotActiveException, NullException {

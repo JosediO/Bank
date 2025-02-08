@@ -16,7 +16,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserEntity {
 	
-
 	private Integer id;
 	private String acessKey;
 	private Boolean active;
@@ -25,4 +24,11 @@ public class UserEntity {
 	private LocalDateTime created_at;
 	private LocalDateTime updated_at;
 
+	public void addValue(Integer value) {
+		balance = balance + value;
+	}
+
+	public void subValue(Integer value) {
+		balance = balance - value;
+	}
 }

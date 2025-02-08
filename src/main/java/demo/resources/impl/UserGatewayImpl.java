@@ -3,6 +3,7 @@ package demo.resources.impl;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import demo.domain.entity.Transfer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -80,19 +81,24 @@ public class UserGatewayImpl implements UserGateway{
 		return user;
 	}
 	
+//	@Override
+//	public UserEntity transferToId(Integer id, Transfer transfer) throws NotFoundException, NullException {
+////		UserEntity user = findById(id);
+////		UserEntity receptor = findById(receptorId);
+////		user.setBalance(user.getBalance()-value);
+////		receptor.setBalance(receptor.getBalance()+value);
+//		userRepository.save(entityToDao(user));
+//		userRepository.save(entityToDao(receptor));
+//		System.out.println("Transfer" + "Name: "+user.getName() +"Transfer to: "+ receptor.getName()+"Amount: "+value+ "Your balance is:"+user.getBalance());;
+//		return user;
+//	}
+
 	@Override
-	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException, NullException {
-		UserEntity user = findById(id);
-		UserEntity receptor = findById(receptorId);
-		user.setBalance(user.getBalance()-value);
-		receptor.setBalance(receptor.getBalance()+value);
-		userRepository.save(entityToDao(user));
-		userRepository.save(entityToDao(receptor));
-		System.out.println("Transfer" + "Name: "+user.getName() +"Transfer to: "+ receptor.getName()+"Amount: "+value+ "Your balance is:"+user.getBalance());;
-		return user;
+	public UserEntity update(UserEntity userEntity) {
+		return userRepository.save(entityToDao(userEntity)).toEntity();
 	}
 
-	
+
 	private UserDao toDao(UserEntity userEntity) {
 		UserDao userDao = new UserDao();
 		userDao.setId(userEntity.getId());
@@ -120,10 +126,10 @@ public class UserGatewayImpl implements UserGateway{
 		return entityUser;
 	}
 
-	private UserDao entityToDao (UserEntity userEntity) throws NullException {
-		if(userEntity == null) {
-			throw new NullException("User Entity is Null",ErrorType.NULL);
-		}
+	private UserDao entityToDao (UserEntity userEntity) {
+//		if(userEntity == null) {
+//			throw new NullException("User Entity is Null",ErrorType.NULL);
+//		}
 		UserDao daoUser = new UserDao();
 		daoUser.setId(userEntity.getId());
 		daoUser.setAccessKey(userEntity.getAcessKey());

@@ -61,7 +61,7 @@ public class BankController {
 	
 	@PutMapping("/{id}/transfer")
 	public ResponseEntity<UserEntity> transferToId(@PathVariable Integer id, @RequestBody TransferRequest transferRequest) throws NotFoundException, InvalidAccessKeyException, InvalidBalanceException, NullException{
-		return ResponseEntity.ok(userService.transferToId(id,transferRequest.getAccessKey(),transferRequest.getReceptorId(),transferRequest.getValue()));
+		return ResponseEntity.ok(userService.transferToId(id, transferRequest.toDomain()));
 	}
 	
 	@PostMapping("/{id}/update")

@@ -1,12 +1,14 @@
 package demo.domain.gateway;
 
 
+import demo.domain.entity.Transfer;
 import demo.domain.entity.UserEntity;
 import demo.domain.exception.InvalidBalanceException;
 import demo.domain.exception.InvalidNameException;
 import demo.domain.exception.NotFoundException;
 import demo.domain.exception.NullException;
 import demo.domain.web.dto.request.UpdateRequest;
+import org.apache.catalina.User;
 
 public interface UserGateway {
 
@@ -17,6 +19,7 @@ public interface UserGateway {
 	public UserEntity deletUser(UserEntity userEntity);
 	public UserEntity withdrawById(UserEntity user, Integer value) throws NullException;
 	public UserEntity depositById(UserEntity user, Integer value) throws NullException;
-	public UserEntity transferToId(Integer id, String accessKey, Integer receptorId, Integer value) throws NotFoundException, NullException;
+//	public UserEntity transferToId(Integer id, Transfer transfer) throws NotFoundException, NullException;
+	public UserEntity update(UserEntity userEntity);
 
 }
