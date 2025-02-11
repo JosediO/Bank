@@ -1,4 +1,4 @@
-package demo.domain.web.dto;
+package demo.domain.web.dto.response;
 
 
 import lombok.AllArgsConstructor;
@@ -12,7 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserDto {
 	
-	private Integer id;
 	private String acessKey;
 	private Boolean active;
 	private String name;
