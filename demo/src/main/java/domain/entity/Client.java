@@ -22,7 +22,7 @@ public class Client {
     private Long clientId;
     private String name;
     private String cpf;
-    private BigDecimal balance;
+    private Integer balance;
     private ClientStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

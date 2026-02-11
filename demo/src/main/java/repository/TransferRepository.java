@@ -1,6 +1,5 @@
 package repository;
 
-import domain.entity.Transfer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
