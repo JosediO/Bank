@@ -1,6 +1,6 @@
-package domain.entity;
+package com.example.demo.domain.entity;
 
-import domain.enums.ErrorType;
+import com.example.demo.domain.enums.ErrorType;
 
 public class ExceptionResponse {
 

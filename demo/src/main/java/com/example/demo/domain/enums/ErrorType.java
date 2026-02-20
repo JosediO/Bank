@@ -1,4 +1,4 @@
-package domain.enums;
+package com.example.demo.domain.enums;
 
 public enum ErrorType {
 
@@ -8,6 +8,7 @@ public enum ErrorType {
     INVALID_VALUE,
     INACTIVE,
     NULL,
-    INVALID_VALUE_FORMAT,
-    INVALID_KEY;
+    INVALID_FORMAT,
+
+
 }

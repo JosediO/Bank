@@ -1,6 +1,6 @@
-package domain.entity;
+package com.example.demo.domain.entity;
 
-import domain.enums.ClientStatus;
+import com.example.demo.domain.enums.ClientStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,16 +15,24 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "clients")
 public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "client_id")
     private Long clientId;
+    private String account;
     private String name;
     private String cpf;
-    private Integer balance;
+    @Column(name = "balance", precision = 15, scale = 2)
+    private BigDecimal balance;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private ClientStatus status;
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
 }
