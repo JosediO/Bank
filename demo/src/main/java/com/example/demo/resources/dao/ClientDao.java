@@ -1,4 +1,4 @@
-package com.example.demo.domain.resources.dao;
+package com.example.demo.resources.dao;
 
 import com.example.demo.domain.enums.ClientStatus;
 import jakarta.persistence.*;
@@ -27,6 +27,8 @@ public class ClientDao {
     private String name;
     private String cpf;
     private BigDecimal balance;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private ClientStatus status;
     @Column(name = "created_at")
     private LocalDateTime createdAt;

@@ -5,7 +5,7 @@ import com.example.demo.domain.enums.ErrorType;
 public class InvalidCpfException extends DomainException {
 
     public InvalidCpfException() {
-        super("O CPF é invalido. Tente novamente",
+        super("The CPF is invalid. Try Again",
                 ErrorType.INVALID_FORMAT);
     }
 

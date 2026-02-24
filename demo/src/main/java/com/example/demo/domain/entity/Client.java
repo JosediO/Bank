@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "clients")
 public class Client {
 
     @Id
@@ -25,14 +24,9 @@ public class Client {
     private String account;
     private String name;
     private String cpf;
-    @Column(name = "balance", precision = 15, scale = 2)
     private BigDecimal balance;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
     private ClientStatus status;
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
 }
