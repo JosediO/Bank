@@ -4,8 +4,8 @@ import com.example.demo.domain.enums.ErrorType;
 
 public class NotActiveException extends DomainException {
 
-    public NotActiveException() {
-        super("Not Active. Please try Again", ErrorType.INACTIVE);
+    public NotActiveException(String msg, ErrorType errorType) {
+        super(msg,errorType);
     }
 
 }

@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 public class NotFoundException extends DomainException {
 
-    public NotFoundException() {
-        super("Not Found. Please try Again",ErrorType.NOT_FOUND);
+    public NotFoundException(String msg, ErrorType errorType) {
+        super(msg,errorType);
     }
 
 }

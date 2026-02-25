@@ -1,5 +1,6 @@
 package com.example.demo.resources.dao;
 
+import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,4 +35,17 @@ public class ClientDao {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public Client daoToEntity(){
+        Client client = new Client();
+        client.setClientId(clientId);
+        client.setAccount(account);
+        client.setName(name);
+        client.setCpf(cpf);
+        client.setBalance(balance);
+        client.setStatus(status);
+        client.setCreatedAt(createdAt);
+        client.setUpdatedAt(updatedAt);
+        return client;
+    }
 }

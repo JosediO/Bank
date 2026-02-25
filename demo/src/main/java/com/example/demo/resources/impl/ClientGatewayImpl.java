@@ -1,16 +1,20 @@
 package com.example.demo.resources.impl;
 
 import com.example.demo.domain.entity.Client;
+import com.example.demo.domain.enums.ErrorType;
 import com.example.demo.domain.exceptions.*;
 import com.example.demo.domain.gateway.ClientGateway;
 import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+
+@Slf4j
 @Component
 public class ClientGatewayImpl implements ClientGateway {
 
@@ -22,6 +26,14 @@ public class ClientGatewayImpl implements ClientGateway {
         Optional<ClientDao> optionalClientDao = clientRepository.findById(id);
         ClientDao clientDao = optionalClientDao.get();
         return toEntity(clientDao);
+    }
+
+    @Override
+    public Client createClient(Client client){
+        ClientDao clientDao = toDao(client);
+        ClientDao saveClient = clientRepository.save(clientDao);
+        log.info("Client successfully created.");
+        return saveClient.daoToEntity();
     }
 
 

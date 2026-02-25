@@ -14,12 +14,9 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class Client {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "client_id")
+
     private Long clientId;
     private String account;
     private String name;

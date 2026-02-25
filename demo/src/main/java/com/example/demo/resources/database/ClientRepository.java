@@ -2,6 +2,7 @@ package com.example.demo.resources.database;
 
 
 
+import com.example.demo.domain.entity.Client;
 import com.example.demo.resources.dao.ClientDao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -9,5 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClientRepository extends JpaRepository<ClientDao, Long> {
 
-
+    public Client save(Client client);
 }
