@@ -4,8 +4,7 @@ import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.gateway.ClientGateway;
-import com.example.demo.resources.dao.ClientDao;
-import com.example.demo.resources.database.ClientRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +32,8 @@ public class ClientServiceTest {
     private ValidationService validationService;
 
     @Test
-    void shouldReturnClientWhenIdExists() {
+    @DisplayName("Should return client when id exists.")
+    void searchValidId() {
 
         Client client = new Client();
         when(clientGateway.getClientById(1L)).thenReturn(client);
@@ -45,7 +45,8 @@ public class ClientServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenClientNotFound() {
+    @DisplayName("Should throw exception when client not found.")
+    void searchNullId() {
 
         when(clientGateway.getClientById(1L)).thenReturn(null);
 
@@ -56,7 +57,8 @@ public class ClientServiceTest {
     }
 
     @Test
-    void shouldReturnCreateClientSuccess(){
+    @DisplayName("Should return create client Success.")
+    void createClient(){
         Client client = new Client();
         client.setAccount("13ABC");
         client.setName("Testing Create Client");

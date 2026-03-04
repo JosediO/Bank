@@ -10,5 +10,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClientRepository extends JpaRepository<ClientDao, Long> {
 
-    public Client save(Client client);
 }

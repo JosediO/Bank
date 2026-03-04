@@ -1,5 +1,6 @@
 package com.example.demo.domain.service;
 
+import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
 import com.example.demo.domain.enums.ErrorType;
 import com.example.demo.domain.exceptions.*;
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 @Service
 public class ValidationService {
 
-    public void validationAccount(String account) {
+    void validationAccount(String account) {
         if (account == null) {
             //log.info("Account creation failed. Please check that you have filled in the fields and try again.");
             throw new InvalidAccountException("Account creation failed. Please check that you have filled in the fields and try again.", ErrorType.NULL);
@@ -23,7 +24,7 @@ public class ValidationService {
         }
     }
 
-    public void validationClientName(String name) {
+    private void validationClientName(String name) {
         if (name == null || !name.matches("^[a-zA-Z ]{10,50}$")) {
             log.info("Account name need minimum 10 and 50 maximum characters");
             throw new InvalidNameException("Account name need minimum 10 and 50 maximum characters",ErrorType.INVALID_FORMAT);
@@ -31,21 +32,21 @@ public class ValidationService {
 
     }
 
-    public void validationCpf(String cpf) {
+    private void validationCpf(String cpf) {
         if (cpf == null || !cpf.matches("^\\d{11}$")) {
             log.info("Cpf account need 11 numbers");
             throw new InvalidCpfException("Cpf account need 11 numbers",ErrorType.INVALID_FORMAT);
         }
     }
 
-    public void validationPositiveBalance(BigDecimal balance) {
+    private void validationPositiveBalance(BigDecimal balance) {
         if (balance.compareTo(BigDecimal.ZERO) < 0) {
             log.info("The balance is negative!");
             throw new InvalidBalanceException("The balance is negative!",ErrorType.INVALID_VALUE);
         }
     }
 
-    public void validationBalanceTransaction(BigDecimal balance, BigDecimal amount) {
+    void validationBalanceTransaction(BigDecimal balance, BigDecimal amount) {
         if(amount == null){
             log.info("Transaction amount cannot be null.");
             throw new InvalidBalanceException("Transaction amount cannot be null.",ErrorType.NULL);
@@ -60,19 +61,19 @@ public class ValidationService {
         }
     }
 
-    public void validationStatus(ClientStatus status) {
+    void validationStatus(ClientStatus status) {
         if(status != ClientStatus.ACTIVE){
             log.info("The status is inactive or blocked!");
             throw new NotActiveException("The status is inactive or blocked!",ErrorType.INACTIVE);
         }
     }
 
-    public void validationCreateClient(String account, String name, String cpf,BigDecimal balance ,ClientStatus status ){
-            validationAccount(account);
-            validationClientName(name);
-            validationCpf(cpf);
-            validationPositiveBalance(balance);
-            validationStatus(status);
+    public void validationCreateClient(Client client){
+            validationAccount(client.getAccount());
+            validationClientName(client.getName());
+            validationCpf(client.getCpf());
+            validationPositiveBalance(client.getBalance());
+            validationStatus(client.getStatus());
         }
 
 }

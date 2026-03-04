@@ -1,11 +1,11 @@
-package com.example.demo.web.dto;
+package com.example.demo.web.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class DepositRequest {
+public class WithdrawRequest {
 
     private Integer amount;
 }

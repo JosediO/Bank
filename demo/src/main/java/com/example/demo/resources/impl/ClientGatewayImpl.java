@@ -1,7 +1,6 @@
 package com.example.demo.resources.impl;
 
 import com.example.demo.domain.entity.Client;
-import com.example.demo.domain.enums.ErrorType;
 import com.example.demo.domain.exceptions.*;
 import com.example.demo.domain.gateway.ClientGateway;
 import com.example.demo.resources.dao.ClientDao;

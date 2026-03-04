@@ -33,7 +33,7 @@ public class ClientService {
     }
 
     public Client createClient(Client client) throws DomainException{
-        validationService.validationCreateClient(client.getAccount(),client.getName(),client.getCpf(),client.getBalance(),client.getStatus());
+        validationService.validationCreateClient(client);
         log.info("Starting create new client...");
         return clientGateway.createClient(client);
     }

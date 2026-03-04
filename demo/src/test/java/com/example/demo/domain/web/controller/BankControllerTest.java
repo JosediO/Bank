@@ -4,6 +4,7 @@ import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.service.ClientService;
 import com.example.demo.web.controller.BankController;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -31,7 +32,8 @@ public class BankControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void shouldReturnClientWhenIdExists() throws Exception {
+    @DisplayName("Should return client when id exists")
+    void returnClientExistsId() throws Exception {
 
         Client client = new Client();
         client.setClientId(1L);
@@ -48,7 +50,8 @@ public class BankControllerTest {
     }
 
     @Test
-    void shouldCreateClient() throws Exception {
+    @DisplayName("Should create client successfully")
+    void createClientSuccess() throws Exception {
 
         Client input = new Client();
         input.setName("John Doe");

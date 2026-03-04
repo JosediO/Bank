@@ -2,7 +2,7 @@ package com.example.demo.domain.gateway;
 
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.exceptions.*;
-import com.example.demo.web.dto.UpdateRequest;
+import com.example.demo.web.dto.request.ClientDto;
 
 public interface ClientGateway {
 

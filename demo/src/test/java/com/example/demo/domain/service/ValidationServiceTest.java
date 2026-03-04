@@ -6,6 +6,7 @@ import com.example.demo.domain.exceptions.InvalidAccountException;
 import com.example.demo.domain.exceptions.InvalidBalanceException;
 import com.example.demo.domain.exceptions.NotActiveException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,7 +26,8 @@ public class ValidationServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenAccountIsNull() {
+    @DisplayName("Should throw exception when account is null.")
+    void accountIsNull() {
 
         InvalidAccountException ex = assertThrows(
                 InvalidAccountException.class,
@@ -36,7 +38,8 @@ public class ValidationServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenAccountFormatIsInvalid() {
+    @DisplayName("Should throw exception when account format is invalid.")
+    void accountFormatIsInvalid() {
 
         InvalidAccountException ex = assertThrows(
                 InvalidAccountException.class,
@@ -47,14 +50,16 @@ public class ValidationServiceTest {
     }
 
     @Test
-    void shouldNotThrowExceptionWhenAccountIsValid() {
+    @DisplayName("Should not throw exception when account format is Valid.")
+    void accountFormatIsValid() {
         assertDoesNotThrow(() ->
                 validationService.validationAccount("A1B2C")
         );
     }
 
     @Test
-    void shouldThrowExceptionWhenAmountIsNull() {
+    @DisplayName("Should throw exception when amount is null")
+    void amountIsNull() {
 
         InvalidBalanceException ex = assertThrows(
                 InvalidBalanceException.class,
@@ -68,7 +73,8 @@ public class ValidationServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenAmountIsNegative() {
+    @DisplayName("Should throw exception when amount is negative")
+    void amountIsNegative() {
 
         InvalidBalanceException ex = assertThrows(
                 InvalidBalanceException.class,
@@ -82,7 +88,8 @@ public class ValidationServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenAmountIsGreaterThanBalance() {
+    @DisplayName("Should throw exception when amount is greater than balance")
+    void amountGreaterThanBalance() {
 
         InvalidBalanceException ex = assertThrows(
                 InvalidBalanceException.class,
@@ -96,7 +103,8 @@ public class ValidationServiceTest {
     }
 
     @Test
-    void shouldNotThrowExceptionWhenTransactionIsValid() {
+    @DisplayName("Should not throw exception when transaction is valid")
+    void validTransaction() {
         assertDoesNotThrow(() ->
                 validationService.validationBalanceTransaction(
                         new BigDecimal("1000"),
@@ -106,7 +114,8 @@ public class ValidationServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenStatusIsNotActive() {
+    @DisplayName("Should throw exception when status is not active")
+    void statusNotActive() {
 
         NotActiveException ex = assertThrows(
                 NotActiveException.class,

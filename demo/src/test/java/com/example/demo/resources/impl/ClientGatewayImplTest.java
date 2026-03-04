@@ -3,6 +3,7 @@ package com.example.demo.resources.impl;
 import com.example.demo.domain.entity.Client;
 import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,7 @@ public class ClientGatewayImplTest {
     private ClientRepository clientRepository;
 
     @Test
+    @DisplayName("given a valid id, the searching is successfully")
     void shouldReturnClientWhenIdExists() {
 
         Long id = 1L;
@@ -50,6 +52,7 @@ public class ClientGatewayImplTest {
     }
 
     @Test
+    @DisplayName("given a valid client, should create successfully")
     void shouldCreateClient() {
 
         Client input = new Client();
