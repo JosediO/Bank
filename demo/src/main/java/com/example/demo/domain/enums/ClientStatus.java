@@ -1,4 +1,4 @@
-package domain.enums;
+package com.example.demo.domain.enums;
 
 public enum ClientStatus{
         ACTIVE,
