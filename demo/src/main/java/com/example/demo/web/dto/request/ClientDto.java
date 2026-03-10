@@ -1,29 +1,23 @@
-package com.example.demo.domain.entity;
+package com.example.demo.web.dto.request;
+
 
 import com.example.demo.domain.enums.ClientStatus;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Client {
+public class ClientDto {
 
-
-    private Long clientId;
     private String account;
     private String name;
     private String cpf;
     private BigDecimal balance;
     private ClientStatus status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
 }
