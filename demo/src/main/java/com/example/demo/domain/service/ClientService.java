@@ -1,11 +1,13 @@
 package com.example.demo.domain.service;
 
 import com.example.demo.domain.entity.Client;
+import com.example.demo.domain.enums.ClientStatus;
 import com.example.demo.domain.enums.ErrorType;
 import com.example.demo.domain.exceptions.DomainException;
 
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.gateway.ClientGateway;
+import com.example.demo.web.dto.request.UpdateRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,15 @@ public class ClientService {
         validationService.validationCreateClient(client);
         log.info("Starting create new client...");
         return clientGateway.createClient(client);
+    }
+
+    public Client updateClient(Long id, UpdateRequest updateRequest){
+        Client client = getClientById(id);
+        validationService.validationClientName(updateRequest.getName());
+        validationService.validationCpf(updateRequest.getCpf());
+        validationService.validationStatus((ClientStatus) updateRequest.getStatus());
+        log.info("Starting update client with id: "+id);
+        return clientGateway.updateClient(client, updateRequest);
     }
 
 

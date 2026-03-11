@@ -76,4 +76,6 @@ public class ClientGatewayImplTest {
 
         verify(clientRepository).save(any(ClientDao.class));
     }
+
+
 }

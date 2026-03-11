@@ -4,6 +4,7 @@ import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.gateway.ClientGateway;
+import com.example.demo.web.dto.request.UpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,12 +13,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 public class ClientServiceTest {
@@ -73,5 +75,32 @@ public class ClientServiceTest {
 
         assertNotNull(result);
         verify(clientGateway).createClient(any(Client.class));
+    }
+
+    @Test
+    @DisplayName("Should return updated client Success.")
+    void updateClient(){
+        Long id = 1L;
+
+        Client client = new Client();
+        client.setClientId(id);
+
+        UpdateRequest updateRequest = new UpdateRequest();
+        updateRequest.setName("João");
+        updateRequest.setCpf("12345678900");
+        updateRequest.setStatus(ClientStatus.ACTIVE);
+
+        when(clientGateway.getClientById(id)).thenReturn(client);
+        when(clientGateway.updateClient(client, updateRequest)).thenReturn(client);
+
+        Client result = clientService.updateClient(id, updateRequest);
+
+        assertNotNull(result);
+        assertEquals(id, result.getClientId());
+
+        verify(validationService).validationClientName(updateRequest.getName());
+        verify(validationService).validationCpf(updateRequest.getCpf());
+        verify(validationService).validationStatus((ClientStatus) updateRequest.getStatus());
+        verify(clientGateway).updateClient(client, updateRequest);
     }
 }

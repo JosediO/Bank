@@ -1,5 +1,6 @@
 package com.example.demo.web.dto.request;
 
+import com.example.demo.domain.enums.ClientStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,5 +10,5 @@ public class UpdateRequest {
 
     private String name;
     private String cpf;
-    private Enum status;
+    private ClientStatus status;
 }
