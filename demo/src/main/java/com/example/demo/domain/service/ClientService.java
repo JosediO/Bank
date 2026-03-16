@@ -38,5 +38,10 @@ public class ClientService {
         return clientGateway.createClient(client);
     }
 
+    public Client deletClient(Long id) throws DomainException{
+        Client client = getClientById(id);
+        return clientGateway.deletClient(client);
+    }
+
 
 }

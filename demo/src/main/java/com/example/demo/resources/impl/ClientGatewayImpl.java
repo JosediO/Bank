@@ -1,6 +1,7 @@
 package com.example.demo.resources.impl;
 
 import com.example.demo.domain.entity.Client;
+import com.example.demo.domain.enums.ClientStatus;
 import com.example.demo.domain.exceptions.*;
 import com.example.demo.domain.gateway.ClientGateway;
 import com.example.demo.resources.dao.ClientDao;
@@ -33,6 +34,14 @@ public class ClientGatewayImpl implements ClientGateway {
         ClientDao saveClient = clientRepository.save(clientDao);
         log.info("Client successfully created.");
         return saveClient.daoToEntity();
+    }
+
+    @Override
+    public Client deletClient(Client client){
+        client.setStatus(ClientStatus.DESACTIVED);
+        ClientDao clientDao = toDao(client);
+        clientRepository.save(clientDao);
+        return client;
     }
 
 
