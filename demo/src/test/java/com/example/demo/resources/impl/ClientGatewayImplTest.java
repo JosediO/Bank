@@ -4,6 +4,7 @@ import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
 import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
+import com.example.demo.web.dto.request.UpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,6 +81,30 @@ public class ClientGatewayImplTest {
     }
 
     @Test
+    @DisplayName("Should update client successfully")
+    void shouldUpdateClient() {
+
+        Client client = new Client();
+        client.setClientId(1L);
+        client.setName("Old Name");
+        client.setCpf("11111111111");
+        client.setStatus(ClientStatus.ACTIVE);
+
+        UpdateRequest request = new UpdateRequest();
+        request.setName("New Name");
+        request.setCpf("22222222222");
+        request.setStatus(ClientStatus.DESACTIVED);
+
+        ClientDao dao = new ClientDao();
+        dao.setClientId(1L);
+
+        when(clientRepository.save(any(ClientDao.class))).thenReturn(dao);
+
+        Client result = clientGateway.updateClient(client, request);
+
+        assertNotNull(result);
+        assertEquals("New Name", result.getName());
+        assertEquals("22222222222", result.getCpf());
     @DisplayName("Should soft delete client success")
     void shouldSoftDeleteClient(){
 
@@ -101,4 +126,5 @@ public class ClientGatewayImplTest {
 
         verify(clientRepository).save(any(ClientDao.class));
     }
+
 }

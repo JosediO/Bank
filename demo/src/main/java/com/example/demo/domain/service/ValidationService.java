@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Service
 public class ValidationService {
 
-    void validationAccount(String account) {
+    public void validationAccount(String account) {
         if (account == null) {
             //log.info("Account creation failed. Please check that you have filled in the fields and try again.");
             throw new InvalidAccountException("Account creation failed. Please check that you have filled in the fields and try again.", ErrorType.NULL);
@@ -24,7 +24,7 @@ public class ValidationService {
         }
     }
 
-    private void validationClientName(String name) {
+    public void validationClientName(String name) {
         if (name == null || !name.matches("^[a-zA-Z ]{10,50}$")) {
             log.info("Account name need minimum 10 and 50 maximum characters");
             throw new InvalidNameException("Account name need minimum 10 and 50 maximum characters",ErrorType.INVALID_FORMAT);
@@ -32,7 +32,7 @@ public class ValidationService {
 
     }
 
-    private void validationCpf(String cpf) {
+    public void validationCpf(String cpf) {
         if (cpf == null || !cpf.matches("^\\d{11}$")) {
             log.info("Cpf account need 11 numbers");
             throw new InvalidCpfException("Cpf account need 11 numbers",ErrorType.INVALID_FORMAT);
@@ -46,7 +46,7 @@ public class ValidationService {
         }
     }
 
-    void validationBalanceTransaction(BigDecimal balance, BigDecimal amount) {
+    public void validationBalanceTransaction(BigDecimal balance, BigDecimal amount) {
         if(amount == null){
             log.info("Transaction amount cannot be null.");
             throw new InvalidBalanceException("Transaction amount cannot be null.",ErrorType.NULL);
@@ -61,7 +61,7 @@ public class ValidationService {
         }
     }
 
-    void validationStatus(ClientStatus status) {
+    public void validationStatus(ClientStatus status) {
         if(status != ClientStatus.ACTIVE){
             log.info("The status is inactive or blocked!");
             throw new NotActiveException("The status is inactive or blocked!",ErrorType.INACTIVE);

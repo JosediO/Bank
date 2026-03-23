@@ -3,6 +3,7 @@ package com.example.demo.web.controller;
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.service.ClientService;
 import com.example.demo.web.dto.request.ClientDto;
+import com.example.demo.web.dto.request.UpdateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,9 @@ public class BankController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(clientService.createClient(client)));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Client> updateUser(@PathVariable Long id, @RequestBody UpdateRequest updateRequest){
+        return ResponseEntity.ok(clientService.updateClient(id,updateRequest));
     @DeleteMapping("/{id}")
     public ResponseEntity<Client> delentClient(@PathVariable Long id){
         return ResponseEntity.ok(clientService.deletClient(id));

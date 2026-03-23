@@ -6,6 +6,7 @@ import com.example.demo.domain.exceptions.*;
 import com.example.demo.domain.gateway.ClientGateway;
 import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
+import com.example.demo.web.dto.request.UpdateRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,18 @@ public class ClientGatewayImpl implements ClientGateway {
     }
 
     @Override
+    public Client updateClient(Client client, UpdateRequest updateRequest){
+        if(updateRequest.getName() != null){
+            client.setName(updateRequest.getName());
+        }
+        if(updateRequest.getCpf() != null){
+            client.setCpf(updateRequest.getCpf());
+        }
+        if(updateRequest.getStatus() != null){
+            client.setStatus((ClientStatus) updateRequest.getStatus());
+        }
+        client.setUpdatedAt(LocalDateTime.now());
+        clientRepository.save(toDao(client));
     public Client deletClient(Client client){
         client.setStatus(ClientStatus.DESACTIVED);
         ClientDao clientDao = toDao(client);
