@@ -28,6 +28,11 @@ public class BankController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(clientService.createClient(client)));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Client> delentClient(@PathVariable Long id){
+        return ResponseEntity.ok(clientService.deletClient(id));
+    }
+
     private ClientDto toDto(Client client) {
         return new ClientDto(
                 client.getAccount(),

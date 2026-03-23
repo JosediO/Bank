@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -71,5 +72,13 @@ public class BankControllerTest {
         );
 
         verify(clientService).createClient(any(Client.class));
+    }
+
+    @Test
+    @DisplayName("Should logic delet client success.")
+    void deletClientSuccess() throws Exception {
+
+        mockMvc.perform(delete("/clients/1"))
+                .andExpect(status().isOk());
     }
 }

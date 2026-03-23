@@ -1,6 +1,7 @@
 package com.example.demo.resources.impl;
 
 import com.example.demo.domain.entity.Client;
+import com.example.demo.domain.enums.ClientStatus;
 import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Optional;
 
@@ -73,6 +75,29 @@ public class ClientGatewayImplTest {
         assertNotNull(result);
         assertEquals(1L, result.getClientId());
         assertEquals("John Doe", result.getName());
+
+        verify(clientRepository).save(any(ClientDao.class));
+    }
+
+    @Test
+    @DisplayName("Should soft delete client success")
+    void shouldSoftDeleteClient(){
+
+        Client client = new Client();
+        client.setClientId(1L);
+        client.setStatus(ClientStatus.ACTIVE);
+
+        ClientDao dao = new ClientDao();
+        dao.setClientId(1L);
+        dao.setStatus(ClientStatus.DESACTIVED);
+
+        when(clientRepository.save(any(ClientDao.class)))
+                .thenReturn(dao);
+
+        Client result = clientGateway.deletClient(client);
+
+        assertNotNull(result);
+        assertEquals(ClientStatus.DESACTIVED, result.getStatus());
 
         verify(clientRepository).save(any(ClientDao.class));
     }
