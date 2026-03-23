@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Optional;
 
@@ -104,6 +105,23 @@ public class ClientGatewayImplTest {
         assertNotNull(result);
         assertEquals("New Name", result.getName());
         assertEquals("22222222222", result.getCpf());
+    @DisplayName("Should soft delete client success")
+    void shouldSoftDeleteClient(){
+
+        Client client = new Client();
+        client.setClientId(1L);
+        client.setStatus(ClientStatus.ACTIVE);
+
+        ClientDao dao = new ClientDao();
+        dao.setClientId(1L);
+        dao.setStatus(ClientStatus.DESACTIVED);
+
+        when(clientRepository.save(any(ClientDao.class)))
+                .thenReturn(dao);
+
+        Client result = clientGateway.deletClient(client);
+
+        assertNotNull(result);
         assertEquals(ClientStatus.DESACTIVED, result.getStatus());
 
         verify(clientRepository).save(any(ClientDao.class));

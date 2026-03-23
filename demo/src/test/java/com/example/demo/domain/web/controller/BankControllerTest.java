@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -120,4 +121,10 @@ public class BankControllerTest {
         verify(clientService).updateClient(eq(id), any(UpdateRequest.class));
     }
 
+    @DisplayName("Should logic delet client success.")
+    void deletClientSuccess() throws Exception {
+
+        mockMvc.perform(delete("/clients/1"))
+                .andExpect(status().isOk());
+    }
 }

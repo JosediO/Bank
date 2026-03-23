@@ -50,6 +50,10 @@ public class ClientGatewayImpl implements ClientGateway {
         }
         client.setUpdatedAt(LocalDateTime.now());
         clientRepository.save(toDao(client));
+    public Client deletClient(Client client){
+        client.setStatus(ClientStatus.DESACTIVED);
+        ClientDao clientDao = toDao(client);
+        clientRepository.save(clientDao);
         return client;
     }
 

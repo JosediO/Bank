@@ -7,7 +7,8 @@ import com.example.demo.web.dto.request.UpdateRequest;
 
 public interface ClientGateway {
 
-    public Client getClientById(Long Id) throws DomainException;
+    public Client getClientById (Long Id) throws DomainException;
     public Client createClient (Client client) throws DomainException;
     public Client updateClient (Client client, UpdateRequest updateRequest) throws DomainException;
+    public Client deletClient (Client client) throws DomainException;
 }

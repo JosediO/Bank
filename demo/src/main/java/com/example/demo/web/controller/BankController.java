@@ -32,6 +32,9 @@ public class BankController {
     @PutMapping("/{id}")
     public ResponseEntity<Client> updateUser(@PathVariable Long id, @RequestBody UpdateRequest updateRequest){
         return ResponseEntity.ok(clientService.updateClient(id,updateRequest));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Client> delentClient(@PathVariable Long id){
+        return ResponseEntity.ok(clientService.deletClient(id));
     }
 
     private ClientDto toDto(Client client) {

@@ -2,6 +2,7 @@ package com.example.demo.domain.service;
 
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
+import com.example.demo.domain.exceptions.DomainException;
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.gateway.ClientGateway;
 import com.example.demo.web.dto.request.UpdateRequest;
@@ -81,6 +82,10 @@ public class ClientServiceTest {
     @DisplayName("Should return updated client Success.")
     void updateClient(){
         Long id = 1L;
+    @DisplayName("Should logically delete client with id 2")
+    void shouldDeleteClientLogically() throws DomainException {
+
+        Long id = 2L;
 
         Client client = new Client();
         client.setClientId(id);
@@ -94,6 +99,10 @@ public class ClientServiceTest {
         when(clientGateway.updateClient(client, updateRequest)).thenReturn(client);
 
         Client result = clientService.updateClient(id, updateRequest);
+        when(clientGateway.getClientById(id)).thenReturn(client);
+        when(clientGateway.deletClient(client)).thenReturn(client);
+
+        Client result = clientService.deletClient(id);
 
         assertNotNull(result);
         assertEquals(id, result.getClientId());
@@ -102,5 +111,7 @@ public class ClientServiceTest {
         verify(validationService).validationCpf(updateRequest.getCpf());
         verify(validationService).validationStatus((ClientStatus) updateRequest.getStatus());
         verify(clientGateway).updateClient(client, updateRequest);
+        verify(clientGateway).getClientById(id);
+        verify(clientGateway).deletClient(client);
     }
 }

@@ -47,6 +47,9 @@ public class ClientService {
         validationService.validationStatus((ClientStatus) updateRequest.getStatus());
         log.info("Starting update client with id: "+id);
         return clientGateway.updateClient(client, updateRequest);
+    public Client deletClient(Long id) throws DomainException{
+        Client client = getClientById(id);
+        return clientGateway.deletClient(client);
     }
 
 
