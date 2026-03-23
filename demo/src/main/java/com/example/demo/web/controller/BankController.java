@@ -29,7 +29,7 @@ public class BankController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(clientService.createClient(client)));
     }
 
-    @PutMapping("/{id}/update")
+    @PutMapping("/{id}")
     public ResponseEntity<Client> updateUser(@PathVariable Long id, @RequestBody UpdateRequest updateRequest){
         return ResponseEntity.ok(clientService.updateClient(id,updateRequest));
     }
