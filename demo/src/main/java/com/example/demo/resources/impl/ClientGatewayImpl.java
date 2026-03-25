@@ -6,11 +6,13 @@ import com.example.demo.domain.exceptions.*;
 import com.example.demo.domain.gateway.ClientGateway;
 import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
+import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -38,22 +40,34 @@ public class ClientGatewayImpl implements ClientGateway {
     }
 
     @Override
-    public Client updateClient(Client client, UpdateRequest updateRequest){
-        if(updateRequest.getName() != null){
+    public Client updateClient(Client client, UpdateRequest updateRequest) {
+        if (updateRequest.getName() != null) {
             client.setName(updateRequest.getName());
         }
-        if(updateRequest.getCpf() != null){
+        if (updateRequest.getCpf() != null) {
             client.setCpf(updateRequest.getCpf());
         }
-        if(updateRequest.getStatus() != null){
+        if (updateRequest.getStatus() != null) {
             client.setStatus((ClientStatus) updateRequest.getStatus());
         }
         client.setUpdatedAt(LocalDateTime.now());
         clientRepository.save(toDao(client));
+        log.info("Client successfully updated.");
+        return client;
+    }
+
     public Client deletClient(Client client){
         client.setStatus(ClientStatus.DESACTIVED);
         ClientDao clientDao = toDao(client);
         clientRepository.save(clientDao);
+        log.info("Client successfully deleted.");
+        return client;
+    }
+
+    public Client depositById(Client client, DepositRequest depositRequest){
+        client.setBalance(client.getBalance().add(depositRequest.getAmount()));
+        clientRepository.save(toDao(client));
+        log.info("Deposit successfully.");
         return client;
     }
 

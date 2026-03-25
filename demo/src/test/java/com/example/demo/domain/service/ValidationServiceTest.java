@@ -124,4 +124,35 @@ public class ValidationServiceTest {
 
         assertEquals(ErrorType.INACTIVE, ex.getType());
     }
+
+    @Test
+    @DisplayName("Should not throw exception when balance is positive")
+    void AcceptPositiveBalance() {
+
+        BigDecimal balance = new BigDecimal("100.00");
+
+        assertDoesNotThrow(() ->
+                validationService.validationPositiveBalance(balance)
+        );
+    }
+
+    @Test
+    @DisplayName("Should throw exception when balance is negative")
+    void BalanceIsNegative() {
+
+        BigDecimal balance = new BigDecimal("-10.00");
+
+        assertThrows(InvalidBalanceException.class, () ->
+                validationService.validationPositiveBalance(balance)
+        );
+    }
+
+    @Test
+    @DisplayName("Should throw exception when balance is null")
+    void BalanceIsNull() {
+
+        assertThrows(InvalidBalanceException.class, () ->
+                validationService.validationPositiveBalance(null)
+        );
+    }
 }

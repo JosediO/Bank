@@ -3,6 +3,7 @@ package com.example.demo.web.controller;
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.service.ClientService;
 import com.example.demo.web.dto.request.ClientDto;
+import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,11 +31,18 @@ public class BankController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Client> updateUser(@PathVariable Long id, @RequestBody UpdateRequest updateRequest){
-        return ResponseEntity.ok(clientService.updateClient(id,updateRequest));
+    public ResponseEntity<Client> updateUser(@PathVariable Long id, @RequestBody UpdateRequest updateRequest) {
+        return ResponseEntity.ok(clientService.updateClient(id, updateRequest));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Client> delentClient(@PathVariable Long id){
         return ResponseEntity.ok(clientService.deletClient(id));
+    }
+
+    @PutMapping("/{id}/deposit")
+    public ResponseEntity<Client> depositById(@PathVariable Long id, @RequestBody DepositRequest depositRequest){
+        return ResponseEntity.ok(clientService.depositById(id,depositRequest));
     }
 
     private ClientDto toDto(Client client) {
