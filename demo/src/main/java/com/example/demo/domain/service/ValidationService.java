@@ -43,7 +43,7 @@ public class ValidationService {
         if (balance == null) {
             throw new InvalidBalanceException("Balance cannot be null", ErrorType.INVALID_VALUE);
         }
-        if (balance.compareTo(BigDecimal.ZERO) < 0) {
+        if (balance.compareTo(BigDecimal.ZERO) <= 0) {
             log.info("The balance is negative!");
             throw new InvalidBalanceException("The balance is negative!",ErrorType.INVALID_VALUE);
         }
