@@ -2,9 +2,14 @@ package com.example.demo.domain.service;
 
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
+import com.example.demo.domain.enums.ErrorType;
 import com.example.demo.domain.exceptions.DomainException;
+import com.example.demo.domain.exceptions.InvalidBalanceException;
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.gateway.ClientGateway;
+import com.example.demo.resources.dao.ClientDao;
+import com.example.demo.resources.database.ClientRepository;
+import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,8 +23,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +31,9 @@ public class ClientServiceTest {
 
     @InjectMocks
     private ClientService clientService;
+
+    @Mock
+    private ClientRepository clientRepository;
 
     @Mock
     private ClientGateway clientGateway;
@@ -80,12 +87,8 @@ public class ClientServiceTest {
 
     @Test
     @DisplayName("Should return updated client Success.")
-    void updateClient(){
+    void updateClient() {
         Long id = 1L;
-    @DisplayName("Should logically delete client with id 2")
-    void shouldDeleteClientLogically() throws DomainException {
-
-        Long id = 2L;
 
         Client client = new Client();
         client.setClientId(id);
@@ -99,10 +102,6 @@ public class ClientServiceTest {
         when(clientGateway.updateClient(client, updateRequest)).thenReturn(client);
 
         Client result = clientService.updateClient(id, updateRequest);
-        when(clientGateway.getClientById(id)).thenReturn(client);
-        when(clientGateway.deletClient(client)).thenReturn(client);
-
-        Client result = clientService.deletClient(id);
 
         assertNotNull(result);
         assertEquals(id, result.getClientId());
@@ -111,7 +110,107 @@ public class ClientServiceTest {
         verify(validationService).validationCpf(updateRequest.getCpf());
         verify(validationService).validationStatus((ClientStatus) updateRequest.getStatus());
         verify(clientGateway).updateClient(client, updateRequest);
+
+    }
+
+    @Test
+    @DisplayName("Should soft delete client success")
+    void shouldSoftDeleteClient(){
+
+        Long id = 1L;
+
+        Client client = new Client();
+        client.setClientId(id);
+        client.setStatus(ClientStatus.ACTIVE);
+
+        when(clientGateway.getClientById(id)).thenReturn(client);
+
+        client.setStatus(ClientStatus.DESACTIVED);
+        when(clientGateway.deletClient(client)).thenReturn(client);
+
+        Client result = clientService.deletClient(id);
+
+        assertNotNull(result);
+        assertEquals(ClientStatus.DESACTIVED, result.getStatus());
+
         verify(clientGateway).getClientById(id);
         verify(clientGateway).deletClient(client);
+    }
+
+    @Test
+    @DisplayName("Should deposit successfully")
+    void DepositSuccess() {
+
+        Long id = 1L;
+
+        Client client = new Client();
+        client.setClientId(id);
+
+        DepositRequest request = new DepositRequest();
+        request.setAmount(new BigDecimal("100.00"));
+
+        when(clientGateway.getClientById(id)).thenReturn(client);
+        when(clientGateway.depositById(client, request)).thenReturn(client);
+
+        Client result = clientService.depositById(id, request);
+
+        assertNotNull(result);
+        assertEquals(id, result.getClientId());
+
+        verify(validationService).validationPositiveBalance(request.getAmount());
+        verify(clientGateway).depositById(client, request);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when deposit is negative")
+    void DepositIsNegative() {
+
+        Long id = 1L;
+
+        Client client = new Client();
+        client.setClientId(id);
+
+        DepositRequest request = new DepositRequest();
+        request.setAmount(new BigDecimal("-50.00"));
+
+        when(clientGateway.getClientById(id)).thenReturn(client);
+
+        doThrow(new InvalidBalanceException("The balance is negative!", ErrorType.INVALID_VALUE))
+                .when(validationService)
+                .validationPositiveBalance(request.getAmount());
+
+        assertThrows(InvalidBalanceException.class, () ->
+                clientService.depositById(id, request)
+        );
+
+        verify(clientGateway).getClientById(id);
+        verify(validationService).validationPositiveBalance(request.getAmount());
+        verify(clientGateway, never()).depositById(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when deposit amount is null")
+    void ExceptionWhenAmountIsNull() {
+
+        Long id = 1L;
+
+        Client client = new Client();
+        client.setClientId(id);
+
+        DepositRequest request = new DepositRequest();
+        request.setAmount(null);
+
+        when(clientGateway.getClientById(id)).thenReturn(client);
+
+        doThrow(new InvalidBalanceException("Balance cannot be null", ErrorType.INVALID_VALUE))
+                .when(validationService)
+                .validationPositiveBalance(null);
+
+        assertThrows(InvalidBalanceException.class, () ->
+                clientService.depositById(id, request)
+        );
+        verify(clientGateway).getClientById(id);
+        verify(validationService).validationPositiveBalance(null);
+        verify(clientGateway, never()).depositById(any(), any());
     }
 }

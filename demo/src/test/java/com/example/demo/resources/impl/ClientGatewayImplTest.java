@@ -2,24 +2,29 @@ package com.example.demo.resources.impl;
 
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
+import com.example.demo.domain.enums.ErrorType;
+import com.example.demo.domain.exceptions.InvalidBalanceException;
+import com.example.demo.domain.service.ClientService;
+import com.example.demo.domain.service.ValidationService;
 import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
+import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ClientGatewayImplTest {
@@ -29,6 +34,12 @@ public class ClientGatewayImplTest {
 
     @Mock
     private ClientRepository clientRepository;
+
+    @Mock
+    private ValidationService validationService;
+
+    @Mock
+    private ClientService clientService;
 
     @Test
     @DisplayName("given a valid id, the searching is successfully")
@@ -105,8 +116,11 @@ public class ClientGatewayImplTest {
         assertNotNull(result);
         assertEquals("New Name", result.getName());
         assertEquals("22222222222", result.getCpf());
+    }
+
+    @Test
     @DisplayName("Should soft delete client success")
-    void shouldSoftDeleteClient(){
+    void shouldSoftDeleteClient() {
 
         Client client = new Client();
         client.setClientId(1L);
@@ -124,7 +138,34 @@ public class ClientGatewayImplTest {
         assertNotNull(result);
         assertEquals(ClientStatus.DESACTIVED, result.getStatus());
 
-        verify(clientRepository).save(any(ClientDao.class));
+        ArgumentCaptor<ClientDao> captor = ArgumentCaptor.forClass(ClientDao.class);
+        verify(clientRepository).save(captor.capture());
+
+        ClientDao saved = captor.getValue();
+        assertEquals(ClientStatus.DESACTIVED, saved.getStatus());
     }
 
+    @Test
+    @DisplayName("Should deposit amount successfully")
+    void DepositSuccessfully() {
+
+        Client client = new Client();
+        client.setClientId(1L);
+        client.setBalance(new BigDecimal("100.00"));
+
+        DepositRequest request = new DepositRequest();
+        request.setAmount(new BigDecimal("50.00"));
+
+        ClientDao dao = new ClientDao();
+        dao.setClientId(1L);
+
+        when(clientRepository.save(any(ClientDao.class))).thenReturn(dao);
+
+        Client result = clientGateway.depositById(client, request);
+
+        assertNotNull(result);
+        assertEquals(new BigDecimal("150.00"), result.getBalance());
+
+        verify(clientRepository).save(any(ClientDao.class));
+    }
 }

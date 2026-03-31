@@ -7,10 +7,13 @@ import com.example.demo.domain.exceptions.DomainException;
 
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.gateway.ClientGateway;
+import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Slf4j
 @Service
@@ -40,17 +43,24 @@ public class ClientService {
         return clientGateway.createClient(client);
     }
 
-    public Client updateClient(Long id, UpdateRequest updateRequest){
+    public Client updateClient(Long id, UpdateRequest updateRequest) {
         Client client = getClientById(id);
         validationService.validationClientName(updateRequest.getName());
         validationService.validationCpf(updateRequest.getCpf());
         validationService.validationStatus((ClientStatus) updateRequest.getStatus());
-        log.info("Starting update client with id: "+id);
+        log.info("Starting update client with id: " + id);
         return clientGateway.updateClient(client, updateRequest);
+    }
     public Client deletClient(Long id) throws DomainException{
         Client client = getClientById(id);
         return clientGateway.deletClient(client);
     }
 
+    public Client depositById(Long id, DepositRequest depositRequest){
+        Client client = getClientById(id);
+        validationService.validationPositiveBalance(depositRequest.getAmount());
+        log.info("Starting deposit to client with id: " + id);
+        return clientGateway.depositById(client,depositRequest);
+    }
 
 }
