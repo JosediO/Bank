@@ -8,6 +8,7 @@ import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
 import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
+import com.example.demo.web.dto.request.WithdrawRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -68,6 +69,13 @@ public class ClientGatewayImpl implements ClientGateway {
         client.setBalance(client.getBalance().add(depositRequest.getAmount()));
         clientRepository.save(toDao(client));
         log.info("Deposit successfully.");
+        return client;
+    }
+
+    public Client withdrawById(Client client, WithdrawRequest withdrawRequest){
+        client.setBalance(client.getBalance().subtract(withdrawRequest.getAmount()));
+        clientRepository.save(toDao(client));
+        log.info("Withdraw successfully.");
         return client;
     }
 

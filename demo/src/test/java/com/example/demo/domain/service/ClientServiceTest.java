@@ -11,6 +11,7 @@ import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
 import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
+import com.example.demo.web.dto.request.WithdrawRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -212,5 +213,86 @@ public class ClientServiceTest {
         verify(clientGateway).getClientById(id);
         verify(validationService).validationPositiveBalance(null);
         verify(clientGateway, never()).depositById(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should withdraw successfully")
+    void WithdrawSuccess() {
+
+        Long id = 1L;
+
+        Client client = new Client();
+        client.setClientId(id);
+        client.setBalance(new BigDecimal("100.00"));
+
+        WithdrawRequest request = new WithdrawRequest();
+        request.setAmount(new BigDecimal("50.00"));
+
+        // mocks
+        when(clientGateway.getClientById(id)).thenReturn(client);
+        when(clientGateway.withdrawById(client, request)).thenReturn(client);
+
+        Client result = clientService.withdrawById(id, request);
+
+        assertNotNull(result);
+
+        verify(clientGateway).getClientById(id);
+        verify(validationService).validationPositiveBalance(request.getAmount());
+        verify(validationService).validationBalanceTransaction(client.getBalance(), request.getAmount());
+        verify(clientGateway).withdrawById(client, request);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when amount is invalid")
+    void ExceptionWhenAmountIsInvalid() {
+
+        Long id = 1L;
+
+        Client client = new Client();
+        client.setClientId(id);
+        client.setBalance(new BigDecimal("100.00"));
+
+        WithdrawRequest request = new WithdrawRequest();
+        request.setAmount(new BigDecimal("-10.00"));
+
+        when(clientGateway.getClientById(id)).thenReturn(client);
+
+        doThrow(new InvalidBalanceException("Invalid", ErrorType.INVALID_VALUE))
+                .when(validationService)
+                .validationPositiveBalance(request.getAmount());
+
+        assertThrows(InvalidBalanceException.class, () ->
+                clientService.withdrawById(id, request)
+        );
+
+        verify(validationService).validationPositiveBalance(request.getAmount());
+        verify(clientGateway, never()).withdrawById(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when balance is insufficient")
+    void ExceptionWhenBalanceIsInsufficient() {
+
+        Long id = 1L;
+
+        Client client = new Client();
+        client.setClientId(id);
+        client.setBalance(new BigDecimal("50.00"));
+
+        WithdrawRequest request = new WithdrawRequest();
+        request.setAmount(new BigDecimal("100.00"));
+
+        when(clientGateway.getClientById(id)).thenReturn(client);
+
+        doThrow(new InvalidBalanceException("Insufficient funds", ErrorType.INVALID_VALUE))
+                .when(validationService)
+                .validationBalanceTransaction(client.getBalance(), request.getAmount());
+
+        assertThrows(InvalidBalanceException.class, () ->
+                clientService.withdrawById(id, request)
+        );
+
+        verify(validationService).validationBalanceTransaction(client.getBalance(), request.getAmount());
+        verify(clientGateway, never()).withdrawById(any(), any());
     }
 }

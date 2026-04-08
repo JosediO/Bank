@@ -9,6 +9,7 @@ import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.gateway.ClientGateway;
 import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
+import com.example.demo.web.dto.request.WithdrawRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,14 @@ public class ClientService {
         validationService.validationPositiveBalance(depositRequest.getAmount());
         log.info("Starting deposit to client with id: " + id);
         return clientGateway.depositById(client,depositRequest);
+    }
+
+    public Client withdrawById(Long id, WithdrawRequest withdrawRequest){
+        Client client = getClientById(id);
+        validationService.validationPositiveBalance(withdrawRequest.getAmount());
+        validationService.validationBalanceTransaction(client.getBalance(),withdrawRequest.getAmount());
+        log.info("Starting a withdraw on client with id: " + id);
+        return clientGateway.withdrawById(client,withdrawRequest);
     }
 
 }
