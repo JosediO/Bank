@@ -2,10 +2,14 @@ package com.example.demo.domain.web.controller;
 
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
+import com.example.demo.domain.enums.ErrorType;
+import com.example.demo.domain.exceptions.InvalidBalanceException;
+import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.service.ClientService;
 import com.example.demo.web.controller.BankController;
 import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
+import com.example.demo.web.dto.request.WithdrawRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -164,4 +168,40 @@ public class BankControllerTest {
 
         verify(clientService).depositById(eq(id), any(DepositRequest.class));
     }
+
+    @Test
+    @DisplayName("Should withdraw successfully")
+    void WithdrawSuccessfully() throws Exception {
+
+        Long id = 1L;
+
+        WithdrawRequest request = new WithdrawRequest();
+        request.setAmount(new BigDecimal("50.00"));
+
+        Client client = new Client();
+        client.setClientId(id);
+        client.setAccount("A1234");
+        client.setName("João");
+        client.setCpf("12345678900");
+        client.setBalance(new BigDecimal("50.00"));
+        client.setStatus(ClientStatus.ACTIVE);
+
+        when(clientService.withdrawById(eq(id), any(WithdrawRequest.class)))
+                .thenReturn(client);
+
+        mockMvc.perform(put("/clients/{id}/withdraw", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                    {
+                      "amount": 50.00
+                    }
+                    """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.clientId").value(id))
+                .andExpect(jsonPath("$.balance").value(50.00))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
+
+        verify(clientService).withdrawById(eq(id), any(WithdrawRequest.class));
+    }
+
 }

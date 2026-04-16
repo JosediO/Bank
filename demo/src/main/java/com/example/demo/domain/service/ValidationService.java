@@ -54,6 +54,9 @@ public class ValidationService {
             log.info("Transaction amount cannot be null.");
             throw new InvalidBalanceException("Transaction amount cannot be null.",ErrorType.NULL);
         }
+        if (balance == null) {
+            throw new InvalidBalanceException("Balance cannot be null", ErrorType.NULL);
+        }
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             log.info("Transaction amount must be greater than zero.");
             throw new InvalidBalanceException("Transaction amount must be greater than zero.",ErrorType.INVALID_VALUE);

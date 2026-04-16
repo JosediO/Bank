@@ -5,6 +5,7 @@ import com.example.demo.domain.exceptions.*;
 import com.example.demo.web.dto.request.ClientDto;
 import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
+import com.example.demo.web.dto.request.WithdrawRequest;
 
 import java.math.BigDecimal;
 
@@ -15,4 +16,5 @@ public interface ClientGateway {
     public Client updateClient (Client client, UpdateRequest updateRequest) throws DomainException;
     public Client deletClient (Client client) throws DomainException;
     public Client depositById (Client client, DepositRequest depositRequest) throws DomainException;
+    public Client withdrawById (Client client, WithdrawRequest withdrawRequest) throws DomainException;
 }

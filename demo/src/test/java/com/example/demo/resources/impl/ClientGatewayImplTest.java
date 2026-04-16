@@ -10,6 +10,7 @@ import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
 import com.example.demo.web.dto.request.DepositRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
+import com.example.demo.web.dto.request.WithdrawRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -168,4 +169,25 @@ public class ClientGatewayImplTest {
 
         verify(clientRepository).save(any(ClientDao.class));
     }
+
+    @Test
+    @DisplayName("Should Withdraw amount successfully")
+    void shouldWithdrawAmountSuccessfully() {
+        // Arrange
+        Client client = new Client();
+        client.setBalance(new BigDecimal("100.00"));
+
+        WithdrawRequest request = new WithdrawRequest();
+        request.setAmount(new BigDecimal("30.00"));
+
+        when(clientRepository.save(any())).thenReturn(new ClientDao());
+
+        // Act
+        Client result = clientGateway.withdrawById(client, request);
+
+        // Assert
+        assertEquals(new BigDecimal("70.00"), result.getBalance());
+        verify(clientRepository, times(1)).save(any());
+    }
 }
+
