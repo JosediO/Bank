@@ -2,12 +2,7 @@ package com.example.demo.domain.gateway;
 
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.exceptions.*;
-import com.example.demo.web.dto.request.ClientDto;
-import com.example.demo.web.dto.request.DepositRequest;
-import com.example.demo.web.dto.request.UpdateRequest;
-import com.example.demo.web.dto.request.WithdrawRequest;
-
-import java.math.BigDecimal;
+import com.example.demo.web.dto.request.*;
 
 public interface ClientGateway {
 
@@ -17,4 +12,5 @@ public interface ClientGateway {
     public Client deletClient (Client client) throws DomainException;
     public Client depositById (Client client, DepositRequest depositRequest) throws DomainException;
     public Client withdrawById (Client client, WithdrawRequest withdrawRequest) throws DomainException;
+    public Client transferById(Client client, Client receiver, TransferRequest transferRequest);
 }

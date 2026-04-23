@@ -295,4 +295,10 @@ public class ClientServiceTest {
         verify(validationService).validationBalanceTransaction(client.getBalance(), request.getAmount());
         verify(clientGateway, never()).withdrawById(any(), any());
     }
+
+    @Test
+    @DisplayName("Should transfer successfully")
+    void TransferSuccessfully(){
+
+    }
 }

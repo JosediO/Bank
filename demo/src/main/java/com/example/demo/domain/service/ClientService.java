@@ -8,12 +8,14 @@ import com.example.demo.domain.exceptions.DomainException;
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.gateway.ClientGateway;
 import com.example.demo.web.dto.request.DepositRequest;
+import com.example.demo.web.dto.request.TransferRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import com.example.demo.web.dto.request.WithdrawRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sound.midi.Receiver;
 import java.math.BigDecimal;
 
 @Slf4j
@@ -72,4 +74,13 @@ public class ClientService {
         return clientGateway.withdrawById(client,withdrawRequest);
     }
 
+    public Client transferById(Long id, TransferRequest transferRequest){
+        Client client = getClientById(id);
+        Client receiver = getClientById(transferRequest.getReceiverId());
+        validationService.validationPositiveBalance(transferRequest.getAmount());
+        validationService.validationBalanceTransaction(client.getBalance(),transferRequest.getAmount());
+        validationService.validationStatus(receiver.getStatus());
+        log.info("A starting a transfer by client with id: " + id + ",to client with id: " +receiver.getClientId());
+        return clientGateway.transferById(client,receiver, transferRequest);
+    }
 }

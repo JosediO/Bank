@@ -2,10 +2,7 @@ package com.example.demo.web.controller;
 
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.service.ClientService;
-import com.example.demo.web.dto.request.ClientDto;
-import com.example.demo.web.dto.request.DepositRequest;
-import com.example.demo.web.dto.request.UpdateRequest;
-import com.example.demo.web.dto.request.WithdrawRequest;
+import com.example.demo.web.dto.request.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +46,11 @@ public class BankController {
     @PutMapping("/{id}/withdraw")
     public ResponseEntity<Client> withdrawById(@PathVariable Long id, @RequestBody WithdrawRequest withdrawRequest){
         return ResponseEntity.ok(clientService.withdrawById(id,withdrawRequest));
+    }
+
+    @PutMapping("/{id}/transfer")
+    public ResponseEntity<Client> transferById(@PathVariable Long id, @RequestBody TransferRequest transferRequest){
+        return ResponseEntity.ok(clientService.transferById(id,transferRequest));
     }
 
     private ClientDto toDto(Client client) {

@@ -3,11 +3,13 @@ package com.example.demo.domain.web.controller;
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
 import com.example.demo.domain.enums.ErrorType;
+import com.example.demo.domain.exceptions.GlobalExceptionHandler;
 import com.example.demo.domain.exceptions.InvalidBalanceException;
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.service.ClientService;
 import com.example.demo.web.controller.BankController;
 import com.example.demo.web.dto.request.DepositRequest;
+import com.example.demo.web.dto.request.TransferRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import com.example.demo.web.dto.request.WithdrawRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -34,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BankController.class)
+@Import(GlobalExceptionHandler.class)
 public class BankControllerTest {
 
     @Autowired
@@ -112,12 +116,12 @@ public class BankControllerTest {
         mockMvc.perform(put("/clients/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                        {
-                          "name": "João",
-                          "cpf": "12345678900",
-                          "status": "ACTIVE"
-                        }
-                        """))
+                                {
+                                  "name": "João",
+                                  "cpf": "12345678900",
+                                  "status": "ACTIVE"
+                                }
+                                """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("João"))
                 .andExpect(jsonPath("$.cpf").value("12345678900"))
@@ -157,10 +161,10 @@ public class BankControllerTest {
         mockMvc.perform(put("/clients/{id}/deposit", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                    {
-                      "amount": 100.00
-                    }
-                    """))
+                                {
+                                  "amount": 100.00
+                                }
+                                """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.clientId").value(id))
                 .andExpect(jsonPath("$.balance").value(1100.00))
@@ -192,10 +196,10 @@ public class BankControllerTest {
         mockMvc.perform(put("/clients/{id}/withdraw", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                    {
-                      "amount": 50.00
-                    }
-                    """))
+                                {
+                                  "amount": 50.00
+                                }
+                                """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.clientId").value(id))
                 .andExpect(jsonPath("$.balance").value(50.00))
@@ -204,4 +208,83 @@ public class BankControllerTest {
         verify(clientService).withdrawById(eq(id), any(WithdrawRequest.class));
     }
 
+    @Test
+    @DisplayName("Should transfer successfully")
+    void TransferSuccessfully() throws Exception {
+
+        Long id = 1L;
+
+        Client client = new Client();
+        client.setClientId(id);
+        client.setBalance(BigDecimal.valueOf(1000));
+
+        String requestJson = """
+                {
+                "amount": 100
+                 }
+                """;
+
+        when(clientService.transferById(eq(id), any()))
+                .thenReturn(client);
+
+        mockMvc.perform(put("/clients/{id}/transfer", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk());
+
+        verify(clientService).transferById(eq(id), any());
+
+    }
+
+    @Test
+    @DisplayName("Should return 400 when transfer amount is invalid")
+    void ReturnBadRequestWhenTransferInvalid() throws Exception {
+
+        Long id = 1L;
+
+        String requestJson = """
+                {
+                "amount": -50
+                }
+                """;
+
+        when(clientService.transferById(eq(id), any()))
+                .thenThrow(new InvalidBalanceException(
+                        "Invalid amount",
+                        ErrorType.INVALID_VALUE
+                ));
+
+        mockMvc.perform(put("/clients/{id}/transfer", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+
+        verify(clientService).transferById(eq(id), any());
+
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenClientDoesNotExist() throws Exception {
+
+        Long id = 1L;
+
+            String requestJson = """
+            {
+                "amount": 100
+            }
+            """;
+
+        when(clientService.transferById(eq(id), any()))
+                .thenThrow(new NotFoundException(
+                        "Client not found",
+                        ErrorType.NULL
+                ));
+
+        mockMvc.perform(put("/clients/{id}/transfer", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isNotFound());
+
+        verify(clientService).transferById(eq(id), any());
+    }
 }

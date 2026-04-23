@@ -7,13 +7,13 @@ import com.example.demo.domain.gateway.ClientGateway;
 import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
 import com.example.demo.web.dto.request.DepositRequest;
+import com.example.demo.web.dto.request.TransferRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import com.example.demo.web.dto.request.WithdrawRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -76,6 +76,15 @@ public class ClientGatewayImpl implements ClientGateway {
         client.setBalance(client.getBalance().subtract(withdrawRequest.getAmount()));
         clientRepository.save(toDao(client));
         log.info("Withdraw successfully.");
+        return client;
+    }
+
+    public Client transferById(Client client, Client receiver, TransferRequest transferRequest){
+        client.setBalance(client.getBalance().subtract(transferRequest.getAmount()));
+        receiver.setBalance(receiver.getBalance().add(transferRequest.getAmount()));
+        clientRepository.save(toDao(client));
+        clientRepository.save(toDao(receiver));
+        log.info("Transfer Request as successfully.");
         return client;
     }
 
