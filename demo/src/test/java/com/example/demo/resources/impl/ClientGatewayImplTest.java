@@ -9,6 +9,7 @@ import com.example.demo.domain.service.ValidationService;
 import com.example.demo.resources.dao.ClientDao;
 import com.example.demo.resources.database.ClientRepository;
 import com.example.demo.web.dto.request.DepositRequest;
+import com.example.demo.web.dto.request.TransferRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import com.example.demo.web.dto.request.WithdrawRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -188,6 +189,33 @@ public class ClientGatewayImplTest {
         // Assert
         assertEquals(new BigDecimal("70.00"), result.getBalance());
         verify(clientRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("Should Transfer amount successfully")
+    void TransferBalanceBetweenClients() {
+
+        Client sender = new Client();
+        sender.setClientId(1L);
+        sender.setBalance(new BigDecimal("200.00"));
+
+        Client receiver = new Client();
+        receiver.setClientId(2L);
+        receiver.setBalance(new BigDecimal("100.00"));
+
+        TransferRequest request = new TransferRequest();
+        request.setAmount(new BigDecimal("50.00"));
+
+        when(clientRepository.save(any())).thenReturn(new ClientDao());
+
+        Client result = clientGateway.transferById(sender, receiver, request);
+
+        assertEquals(0, sender.getBalance().compareTo(new BigDecimal("150.00")));
+        assertEquals(0, receiver.getBalance().compareTo(new BigDecimal("150.00")));
+
+        verify(clientRepository, times(2)).save(any());
+
+        assertEquals(sender, result);
     }
 }
 
