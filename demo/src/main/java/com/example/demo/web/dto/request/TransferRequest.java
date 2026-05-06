@@ -3,11 +3,12 @@ package com.example.demo.web.dto.request;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class TransferRequest {
 
-    private Long id;
     private Long receiverId;
-    private Integer amount;
+    private BigDecimal amount;
 }

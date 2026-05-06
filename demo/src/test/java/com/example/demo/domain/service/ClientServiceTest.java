@@ -3,13 +3,11 @@ package com.example.demo.domain.service;
 import com.example.demo.domain.entity.Client;
 import com.example.demo.domain.enums.ClientStatus;
 import com.example.demo.domain.enums.ErrorType;
-import com.example.demo.domain.exceptions.DomainException;
 import com.example.demo.domain.exceptions.InvalidBalanceException;
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.gateway.ClientGateway;
-import com.example.demo.resources.dao.ClientDao;
-import com.example.demo.resources.database.ClientRepository;
 import com.example.demo.web.dto.request.DepositRequest;
+import com.example.demo.web.dto.request.TransferRequest;
 import com.example.demo.web.dto.request.UpdateRequest;
 import com.example.demo.web.dto.request.WithdrawRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -32,9 +30,6 @@ public class ClientServiceTest {
 
     @InjectMocks
     private ClientService clientService;
-
-    @Mock
-    private ClientRepository clientRepository;
 
     @Mock
     private ClientGateway clientGateway;
@@ -69,7 +64,7 @@ public class ClientServiceTest {
 
     @Test
     @DisplayName("Should return create client Success.")
-    void createClient(){
+    void createClient() {
         Client client = new Client();
         client.setAccount("13ABC");
         client.setName("Testing Create Client");
@@ -116,7 +111,7 @@ public class ClientServiceTest {
 
     @Test
     @DisplayName("Should soft delete client success")
-    void shouldSoftDeleteClient(){
+    void shouldSoftDeleteClient() {
 
         Long id = 1L;
 
@@ -294,5 +289,71 @@ public class ClientServiceTest {
 
         verify(validationService).validationBalanceTransaction(client.getBalance(), request.getAmount());
         verify(clientGateway, never()).withdrawById(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should transfer successfully")
+    void TransferSuccessfully() {
+        Long id = 1L;
+        Long receiverId = 2L;
+
+        Client client = new Client();
+        client.setClientId(id);
+        client.setBalance(new BigDecimal("200.00"));
+
+        Client receiver = new Client();
+        receiver.setClientId(receiverId);
+        receiver.setStatus(ClientStatus.ACTIVE);
+
+        TransferRequest request = new TransferRequest();
+        request.setReceiverId(receiverId);
+        request.setAmount(new BigDecimal("50.00"));
+
+        when(clientGateway.getClientById(id)).thenReturn(client);
+        when(clientGateway.getClientById(receiverId)).thenReturn(receiver);
+
+        when(clientGateway.transferById(client, receiver, request))
+                .thenReturn(client);
+
+        Client result = clientService.transferById(id, request);
+
+        assertNotNull(result);
+
+        verify(validationService).validationPositiveBalance(request.getAmount());
+        verify(validationService).validationBalanceTransaction(client.getBalance(), request.getAmount());
+        verify(validationService).validationStatus(receiver.getStatus());
+
+        verify(clientGateway).transferById(client, receiver, request);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when insufficient balance")
+    void InsufficientBalanceToTransfer() {
+        Long id = 1L;
+        Long receiverId = 2L;
+
+        Client client = new Client();
+        client.setClientId(id);
+        client.setBalance(new BigDecimal("10.00"));
+
+        Client receiver = new Client();
+        receiver.setClientId(receiverId);
+        receiver.setStatus(ClientStatus.ACTIVE);
+
+        TransferRequest request = new TransferRequest();
+        request.setReceiverId(receiverId);
+        request.setAmount(new BigDecimal("50.00"));
+
+        when(clientGateway.getClientById(id)).thenReturn(client);
+        when(clientGateway.getClientById(receiverId)).thenReturn(receiver);
+
+        doThrow(new InvalidBalanceException("Insufficient funds", ErrorType.INVALID_VALUE))
+                .when(validationService)
+                .validationBalanceTransaction(client.getBalance(), request.getAmount());
+
+        assertThrows(InvalidBalanceException.class,
+                () -> clientService.transferById(id, request));
+
+        verify(clientGateway, never()).transferById(any(), any(), any());
     }
 }
