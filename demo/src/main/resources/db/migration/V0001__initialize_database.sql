@@ -1,7 +1,3 @@
-CREATE DATABASE IF NOT EXISTS bank;
-
-USE bank;
-
 CREATE TABLE IF NOT EXISTS clients(
                          client_id   BIGSERIAL PRIMARY KEY,
                          account VARCHAR(5) NOT NULL UNIQUE,

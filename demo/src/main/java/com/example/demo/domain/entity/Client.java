@@ -1,6 +1,6 @@
-package domain.entity;
+package com.example.demo.domain.entity;
 
-import domain.enums.ClientStatus;
+import com.example.demo.domain.enums.ClientStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,12 +14,11 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class Client {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long clientId;
+    private String account;
     private String name;
     private String cpf;
     private BigDecimal balance;
